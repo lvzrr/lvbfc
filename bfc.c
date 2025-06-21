@@ -3,6 +3,7 @@
 #include "llv/vec.h"
 #include <string.h>
 
+// this is a compiler the same way gcc is a transpiler
 
 #define THROW_ERR(msg, vec, ...) \
 	do { \
