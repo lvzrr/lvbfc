@@ -16,7 +16,34 @@ make
 
 ## Usage
 
-./bfc file.b [output] [options]
+```
+
+bfc - Brainfuck compiler
+---------------------------------------------------
+Usage:
+  ./bfc <input.b> [output] [options]
+
+Options:
+  --no-strict       Disable safety checks for loops
+                    Ignores checks for potentially infinite loops
+
+  --bound-30k       Use legacy 30,000-cell memory model
+                    Faster, dumber, and prone to all the fun bugs
+                    Good for benchmarks, bad for safety
+
+  --opt             Enable token stream optimization
+                    Compresses redundant instructions (e.g. ++++)
+                    Recognizes simple idioms like [-] as clear cell
+
+  --dmp-tok         Print parsed token stream
+                    For debugging
+
+  --help            Print this very help message
+
+Output:
+  Produces a compiled C file and builds it to a native binary.
+  Uses GCC or Clang.
+```
 
 ### Options
 
