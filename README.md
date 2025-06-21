@@ -47,3 +47,26 @@ Note: --opt flag introduces nontrivial macro expansion logic to the C compiler, 
 Includes some of the tests shown here: https://brainfuck.org/tests.b for compliance
 
 Also includes some programs from here: https://brainfuck.org/ (they are really cool check them out)
+
+## Running programs
+
+As of right now, all of these are running smoothly (these are in tests/) + a couple more:
+
+```
+arr2.b
+arrs.b
+dbf2c.b
+e.b
+io.b
+jabh.b
+mandelbrot.b
+numwrap.b
+pwo2.b
+quine.b
+rbg.b
+stri.b
+truemorse.b
+ttt.b
+unmatched.b
+```
+
