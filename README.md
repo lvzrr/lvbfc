@@ -15,7 +15,7 @@ make
 
 ## Usage
 
-./bfc [options] file.bf [output]
+./bfc file.b [output] [options]
 
 ### Options
 
