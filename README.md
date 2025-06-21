@@ -38,3 +38,7 @@ make
 | **Cycles**           | 4.21 billion       |
 | **IPC**              | 2.73               |
 | **Branch misses**    | 1.44%              |
+
+## Tests
+
+Includes some of the test shown here: https://brainfuck.org/tests.b
