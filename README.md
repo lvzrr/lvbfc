@@ -36,7 +36,7 @@ make
 | Mode              | Time Elapsed | Instructions     | Cycles         | IPC  | Branch Misses |
 |-------------------|--------------|------------------|----------------|------|----------------|
 | Bounded 30K       | 0.623 s      | 4.31 billion     | 2.63 billion   | 1.64 | 4.34%          |
-| Growable (Unsafe) | 0.999 s      | 7.81 billion     | 4.00 billion   | 1.95 | 1.02%          |
+| Growable  | 0.999 s      | 7.81 billion     | 4.00 billion   | 1.95 | 1.02%          |
 
 Note: The bounded mode is faster but uses a static 30,000-cell array. The growable version is safer in terms of memory overflows but slower.
 
