@@ -332,7 +332,7 @@ void emit_opt(t_vec *v)
 		if (match_expr(v, i, "[-]")) {
 			const t_tokenseq *c = lv_vec_get(v, i + 1);
 			fprintf(f,
-				"__builtin_memset(buf, 0, %lu);",
+				"/* [-] */__builtin_memset(buf, 0, %lu);",
 				c->len);
 				i += 3;
 			continue;
@@ -347,7 +347,7 @@ void emit_opt(t_vec *v)
 				size_t offset = d->len;
 				size_t scale = c->len;
 				fprintf(f,
-					"GROW_BUF(%lu); "
+					"/* ->+< */ GROW_BUF(%lu); "
 					"*(buf + %lu) += *buf * %lu; "
 					"*buf = 0;",
 					offset, offset, scale);
@@ -358,14 +358,14 @@ void emit_opt(t_vec *v)
 		if (match_expr(v, i, "Z+"))
 		{
 			const t_tokenseq *x = lv_vec_get(v, i + 1);
-			fprintf(f, "*buf = %lu;", x->len);
+			fprintf(f, " /* Z+ */ *buf = %lu;", x->len);
 			i += 2;
 			continue;
 		}
 		if (match_expr(v, i, "Z-"))
 		{
 			const t_tokenseq *x = lv_vec_get(v, i + 1);
-			fprintf(f, "*buf = *buf - %lu;", 256 - x->len);
+			fprintf(f, " /* Z- */ *buf = *buf - %lu;", 256 - x->len);
 			i += 2;
 			continue;
 		}
@@ -394,7 +394,7 @@ void emit_opt(t_vec *v)
 					fprintf(f, "}");
 				break;
 			case 'Z':
-					fprintf(f, "__builtin_memset(buf, 0, %lu);", x.len);
+					fprintf(f, "/* Z */ __builtin_memset(buf, 0, %lu);", x.len);
 				break;
 			default: break;
 		}
