@@ -96,3 +96,8 @@ unmatched.b
 utm.b
 ```
 
+## TODO:
+
+- [x] add legacy layout
+- [ ] add LLVM IR emitter + target
+- [ ] allow multi-file-compilation
