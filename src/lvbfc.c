@@ -149,7 +149,7 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 				if (strict)
 				{
 					free((char *)ogp);
-					THROW_ERR_AT(i, "potential infinite loop [%c] detected in the code", out, (x2 + 1)->op);
+					THROW_ERR_AT(i, "potential infinite loop [%c] detected in the code (run with --no-strict to ignore)", out, (x2 + 1)->op);
 				}
 				else
 					fprintf(stderr, "\033[1;33mWARNING: potential infinite loop [%c] detected @ seq. %lu\033[0m\n", (x2 + 1)->op, i);
@@ -173,7 +173,7 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 			if (strict && !hasm)
 			{
 				free((char *)ogp);
-				THROW_ERR_AT(i, "potential infinite loop (no '-') detected", out);
+				THROW_ERR_AT(i, "potential infinite loop (no '-') detected (run with --no-strict to ignore)", out);
 			}
 			else if (!strict && !hasm)
 				fprintf(stderr, "\033[1;33mWARNING: potential dangerous loop (no '-' in loop) detected @ seq. %lu\033[0m\n", i);
@@ -260,8 +260,9 @@ int main(int argc, char **argv)
 		lv_vec_free(&o);
 		return (0);
 	}
-	printf("[lvbfc] compiling legacy (unsafe 30k stack'd)\n");
+	printf("[lvbfc] compiling\n");
 	emit(&o);
 	compile_c(outname);
+	printf("[lvbfc] compililed successfully!\n");
 	return (0);
 }

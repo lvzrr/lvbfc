@@ -51,7 +51,7 @@ Output:
 
 ## Tests
 
-Includes some of the tests shown here: https://brainfuck.org/tests.b for compliance
+Compliant with https://brainfuck.org/tests.b (included under tests/compliance)
 
 Also includes some programs from here: https://brainfuck.org/ (they are really cool check them out)
 
@@ -60,12 +60,9 @@ Also includes some programs from here: https://brainfuck.org/ (they are really c
 As of right now, all of these are running smoothly (these are in tests/) + a couple more:
 
 ```
-arr2.b
-arrs.b
 dbf2c.b
 e.b
 helloworld.b
-io.b
 jabh.b
 life2.b
 mandelbrot.b
