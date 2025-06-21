@@ -1,6 +1,6 @@
 # bfc
 
-Brainfuck-to-C optimizing compiler written in C, using the [llv](https://github.com/your-org/llv) library.
+Brainfuck-to-C optimizing compiler written in C, using the [llv](https://github.com/lvzrr/llv) library.
 
 ## Features
 
