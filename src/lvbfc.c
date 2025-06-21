@@ -12,14 +12,6 @@ static inline	void phelp(void)
         "  --no-strict       Disable safety checks for loops\n"
         "                    Ignores checks for potentially infinite loops\n"
         "\n"
-        "  --bound-30k       Use legacy 30,000-cell ory model\n"
-        "                    Faster, dumber, and prone to all the fun bugs\n"
-        "                    Good for benchmarks, bad for safety\n"
-        "\n"
-        "  --opt             Enable token stream optimization\n"
-        "                    Compresses redundant instructions (e.g. ++++)\n"
-        "                    Recognizes simple idioms like [-] as clear cell\n"
-        "\n"
         "  --dmp-tok         Print parsed token stream\n"
         "                    For debugging\n"
         "\n"
@@ -225,9 +217,7 @@ int main(int argc, char **argv)
 	char *filename = NULL;
 	char *outname = "bfout";
 	bool strict = true;
-	bool opts = false;
 	bool shstrm = false;
-	bool bounded = false;
 
 	if (argc < 2)
 	{
@@ -238,8 +228,6 @@ int main(int argc, char **argv)
 	{
 		if (strcmp(argv[i], "--no-strict") == 0) 
 			strict = false;
-		else if (strcmp(argv[i], "--bound-30k") == 0) 
-			bounded = true;
 		else if (strcmp(argv[i], "--dmp-tok") == 0) 
 			shstrm = true;
 		else if (strcmp(argv[i], "--help") == 0) 
@@ -247,8 +235,6 @@ int main(int argc, char **argv)
 			phelp();
 			return (0);
 		}
-		else if (strcmp(argv[i], "--opt") == 0) 
-			opts = true;
 		else if (strncmp(argv[i], "--", 2) == 0) 
 		{
 			fprintf(stderr, "Unknown flag: %s\n\n", argv[i]);
@@ -274,24 +260,8 @@ int main(int argc, char **argv)
 		lv_vec_free(&o);
 		return (0);
 	}
-	if (bounded)
-	{
-		printf("[lvbfc] compiling legacy (unsafe 30k stack'd)\n");
-		emit_bounded(&o);
-	}
-	else
-	{
-		if (!opts)
-		{
-			printf("[lvbfc] compiling unoptimized\n");
-			emit(&o);
-		}
-		else
-		{
-			printf("[lvbfc] compiling optimized\n");
-			emit_opt(&o);
-		}
-	}
+	printf("[lvbfc] compiling legacy (unsafe 30k stack'd)\n");
+	emit(&o);
 	compile_c(outname);
 	return (0);
 }

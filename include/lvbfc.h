@@ -35,6 +35,4 @@ typedef	struct tokenseq
 }	t_tokenseq;
 
 void	emit(t_vec *v);
-void	emit_opt(t_vec *v);
-void	emit_bounded(t_vec *v);
 #endif
