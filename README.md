@@ -39,6 +39,7 @@ make
 | Growable  | 0.999 s      | 7.81 billion     | 4.00 billion   | 1.95 | 1.02%          |
 
 Note: The bounded mode is faster but uses a static 30,000-cell array. The growable version is safer in terms of memory overflows but slower.
+
 Note: --opt flag introduces nontrivial macro expansion logic to the C compiler, take that in mind
 
 ## Tests
