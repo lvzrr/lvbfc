@@ -223,7 +223,7 @@ void emit(t_vec *v)
 		"        if (!new_buf) { perror(\"realloc failed\"); exit(EXIT_FAILURE); } \\\n"
 		"        safeg = new_buf; \\\n"
 		"        buf = safeg + offset; \\\n"
-		"        memset(safeg + size, 0, new_size - size); \\\n"
+		"        __builtin_memset(safeg + size, 0, new_size - size); \\\n"
 		"        size = new_size; \\\n"
 		"    } \\\n"
 		"} while (0)\n\n"
@@ -231,7 +231,7 @@ void emit(t_vec *v)
 		"uint8_t *buf = aligned_alloc(512, 65536);"
 		"if (!buf) { perror(\"unable to allocate space\"); return EXIT_FAILURE; }"
 		"size_t size = 65536;"
-		"memset(buf, 0, 65536);"
+		"__builtin_memset(buf, 0, 65536);"
 		"uint8_t *safeg = buf;");
 	size_t i = 0;
 	while (i < v->size)
@@ -262,7 +262,7 @@ void emit(t_vec *v)
 					fprintf(f, "}");
 				break;
 			case 'Z':
-					fprintf(f, "memset(buf, 0, %lu);", x.len);
+					fprintf(f, "__builtin_memset(buf, 0, %lu);", x.len);
 				break;
 			default: break;
 		}
@@ -315,7 +315,7 @@ void emit_opt(t_vec *v)
 		"        if (!new_buf) { perror(\"realloc failed\"); exit(EXIT_FAILURE); } \\\n"
 		"        safeg = new_buf; \\\n"
 		"        buf = safeg + offset; \\\n"
-		"        memset(safeg + size, 0, new_size - size); \\\n"
+		"        __builtin_memset(safeg + size, 0, new_size - size); \\\n"
 		"        size = new_size; \\\n"
 		"    } \\\n"
 		"} while (0)\n\n"
@@ -323,12 +323,20 @@ void emit_opt(t_vec *v)
 		"uint8_t *buf = aligned_alloc(512, 65536);"
 		"if (!buf) { perror(\"unable to allocate space\"); return EXIT_FAILURE; }"
 		"size_t size = 65536;"
-		"memset(buf, 0, 65536);"
+		"__builtin_memset(buf, 0, 65536);"
 		"uint8_t *safeg = buf;");
 	size_t i = 0;
 	while (i < v->size)
 	{
 		t_tokenseq x = *((t_tokenseq *)lv_vec_get_mut(v, i));
+		if (match_expr(v, i, "[-]")) {
+			const t_tokenseq *c = lv_vec_get(v, i + 1);
+			fprintf(f,
+				"__builtin_memset(buf, 0, %lu);",
+				c->len);
+				i += 3;
+			continue;
+		}
 		if (match_expr(v, i, "->+<")) {
 
 			const t_tokenseq *a = lv_vec_get(v, i + 1);
@@ -386,7 +394,7 @@ void emit_opt(t_vec *v)
 					fprintf(f, "}");
 				break;
 			case 'Z':
-					fprintf(f, "memset(buf, 0, %lu);", x.len);
+					fprintf(f, "__builtin_memset(buf, 0, %lu);", x.len);
 				break;
 			default: break;
 		}
