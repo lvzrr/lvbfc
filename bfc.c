@@ -179,7 +179,7 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 			if (strict && !hasm)
 			{
 				free((char *)ogp);
-				THROW_ERR_AT(i, "infinite loop (no '-') detected", out);
+				THROW_ERR_AT(i, "potential infinite loop (no '-') detected", out);
 			}
 			else if (!strict && !hasm)
 				fprintf(stderr, "\033[1;33mWARNING: potential dangerous loop (no '-' in loop) detected @ seq. %lu\033[0m\n", i);
