@@ -24,7 +24,7 @@ Usage:
   ./lvbfc <input.b> [output] [options]
 
 Options:
-  --no-strict       Disable safety checks for loops
+  --no-strict       Disable safety checks for loops (compile-time)
                     Ignores checks for potentially infinite loops
 
   --dmp-tok         Print parsed token stream
