@@ -32,8 +32,9 @@ Options:
                     Good for benchmarks, bad for safety
 
   --opt             Enable token stream optimization
-                    Compresses redundant instructions (e.g. ++++)
                     Recognizes simple idioms like [-] as clear cell
+                    Both the default and this version have dynamic
+                    memory management and bound checks for each move.
 
   --dmp-tok         Print parsed token stream
                     For debugging
@@ -78,10 +79,13 @@ arr2.b
 arrs.b
 dbf2c.b
 e.b
+helloworld.b
 io.b
 jabh.b
+life2.b
 mandelbrot.b
 numwrap.b
+pgq.b
 pwo2.b
 quine.b
 rbg.b
@@ -89,5 +93,6 @@ stri.b
 truemorse.b
 ttt.b
 unmatched.b
+utm.b
 ```
 
