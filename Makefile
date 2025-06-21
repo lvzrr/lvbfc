@@ -1,7 +1,7 @@
 CC      = cc
-CFLAGS  = -Wall -Wextra -Werror -O3 -I./llv/include -march=native -msse -msse2 -mavx -mavx2
+CFLAGS  = -Wall -Wextra -Werror -O3 -I./include -I./llv/include -march=native -msse -msse2 -mavx -mavx2
 LIBLV   = llv/liblv.a
-SRC     = bfc.c
+SRC     = src/bfc.c src/emmiters.c
 OUT     = bfc
 
 .PHONY: all clean fclean re
@@ -9,7 +9,7 @@ OUT     = bfc
 all: $(OUT)
 
 $(OUT): $(SRC) $(LIBLV)
-	$(CC) $(CFLAGS) -o $@ $^ 
+	$(CC) $(CFLAGS) -o $@ $^
 
 $(LIBLV):
 	@echo "Building liblv..."
