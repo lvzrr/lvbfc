@@ -242,6 +242,11 @@ int main(int argc, char **argv)
 			bounded = true;
 		else if (strcmp(argv[i], "--dmp-tok") == 0) 
 			shstrm = true;
+		else if (strcmp(argv[i], "--help") == 0) 
+		{
+			phelp();
+			return (0);
+		}
 		else if (strcmp(argv[i], "--opt") == 0) 
 			opts = true;
 		else if (strncmp(argv[i], "--", 2) == 0) 
