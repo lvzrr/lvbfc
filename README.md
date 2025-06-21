@@ -1,4 +1,4 @@
-# bfc
+# lvbfc
 
 Brainfuck-to-C optimizing compiler written in C, using the [llv](https://github.com/lvzrr/llv) library.
 
@@ -18,10 +18,10 @@ make
 
 ```
 
-bfc - Brainfuck compiler
+lvbfc - Brainfuck compiler
 ---------------------------------------------------
 Usage:
-  ./bfc <input.b> [output] [options]
+  ./lvbfc <input.b> [output] [options]
 
 Options:
   --no-strict       Disable safety checks for loops

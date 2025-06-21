@@ -1,18 +1,18 @@
-#include "bfc.h"
+#include "lvbfc.h"
 
 static inline	void phelp(void)
 {
     printf(
-        "bfc - Brainfuck compiler\n"
+        "lvbfc - Brainfuck compiler\n"
         "---------------------------------------------------\n"
         "Usage:\n"
-        "  ./bfc <input.b> [output] [options]\n"
+        "  ./lvbfc <input.b> [output] [options]\n"
         "\n"
         "Options:\n"
         "  --no-strict       Disable safety checks for loops\n"
         "                    Ignores checks for potentially infinite loops\n"
         "\n"
-        "  --bound-30k       Use legacy 30,000-cell memory model\n"
+        "  --bound-30k       Use legacy 30,000-cell ory model\n"
         "                    Faster, dumber, and prone to all the fun bugs\n"
         "                    Good for benchmarks, bad for safety\n"
         "\n"
@@ -276,19 +276,19 @@ int main(int argc, char **argv)
 	}
 	if (bounded)
 	{
-		printf("[bfc] compiling legacy (unsafe 30k stack'd)\n");
+		printf("[lvbfc] compiling legacy (unsafe 30k stack'd)\n");
 		emit_bounded(&o);
 	}
 	else
 	{
 		if (!opts)
 		{
-			printf("[bfc] compiling unoptimized\n");
+			printf("[lvbfc] compiling unoptimized\n");
 			emit(&o);
 		}
 		else
 		{
-			printf("[bfc] compiling optimized\n");
+			printf("[lvbfc] compiling optimized\n");
 			emit_opt(&o);
 		}
 	}

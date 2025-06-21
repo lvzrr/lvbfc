@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "llv/vec.h"
+#include "llv/mem.h"
 
 #define THROW_ERR(msg, vec, ...) \
 	do { \
