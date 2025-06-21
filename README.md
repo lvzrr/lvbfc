@@ -29,7 +29,6 @@ make
 
 - A C compiler (GCC or Clang)
 - make
-- Linux or POSIX system (or Windows with changes)
 
 ## Mandelbrot Benchmark
 
