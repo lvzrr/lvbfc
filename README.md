@@ -45,13 +45,6 @@ Output:
   Uses GCC or Clang.
 ```
 
-### Options
-
---no-strict    disable safety checks on loops  
---opt          enable optimizer  
---dmp-tok      dump token stream to stdout  
---bound-30k    use static 30,000-cell buffer (legacy mode)
-
 ## Requirements
 
 - A C compiler (GCC or Clang)
