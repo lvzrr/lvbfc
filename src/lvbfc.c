@@ -2,26 +2,51 @@
 
 static inline	void phelp(void)
 {
-    printf(
-        "lvbfc - Brainfuck compiler\n"
-        "---------------------------------------------------\n"
-        "Usage:\n"
-        "  ./lvbfc <input.b> [output] [options]\n"
-        "\n"
-        "Options:\n"
-        "  --no-strict       Disable safety checks for loops\n"
-        "                    Ignores checks for potentially infinite loops\n"
-        "\n"
-        "  --dmp-tok         Print parsed token stream\n"
-        "                    For debugging\n"
-        "\n"
-        "  --help           Print this very help message\n"
-        "\n"
-        "Output:\n"
-        "  Produces a compiled C file and builds it to a native binary.\n"
-        "  Uses GCC or Clang.\n"
-        "\n"
-    );
+	printf(
+		"lvbfc - Brainfuck compiler\n"
+		"---------------------------------------------------\n"
+		"Usage:\n"
+		"  ./lvbfc <input.b> [output] [options]\n"
+		"\n"
+		"Arguments:\n"
+		"  <input.b>         Brainfuck source file (required)\n"
+		"  [output]          Output binary name (optional)\n"
+		"                    Default: bfout\n"
+		"\n"
+		"Options:\n"
+		"  --no-strict       Disable safety checks for loops\n"
+		"                    Ignores checks for potentially infinite loops\n"
+		"\n"
+		"  --no-wrap         Disable cell wraparound (executes faster)\n"
+		"                    Allows 8-bit overflow behavior to be undefined\n"
+		"\n"
+		"  --use-heap        Use heap allocation for memory (dynamic growth)\n"
+		"                    Enables GROW_BUF and dynamic pointer range\n"
+		"\n"
+		"  --stacksize=N     Set initial memory size in bytes\n"
+		"                    Default: 65536 (64 KiB)\n"
+		"\n"
+		"  --dmp-tok         Print parsed token stream\n"
+		"                    Useful for debugging and optimization testing\n"
+		"\n"
+		"  --help            Show this help message and exit\n"
+		"\n"
+		"Output:\n"
+		"  Produces a compiled C file and builds it into a native binary.\n"
+		"  Uses GCC or Clang automatically (fallback if one fails).\n"
+		"  Output binary defaults to './bfout' unless specified.\n"
+		"\n"
+		"Examples:\n"
+		"  ./lvbfc hello.b hello         # Compile hello.b to ./hello\n"
+		"  ./lvbfc code.b --use-heap     # Use heap-allocated memory\n"
+		"  ./lvbfc file.b --stacksize=0  # Will error out (invalid stacksize)\n"
+		"\n"
+		"Suggestions:\n"
+		"  - Fastest:   --no-wrap        (you control stacksize manually)\n"
+		"  - Safer:     --use-heap       (grows memory on demand)\n"
+		"  - Slowest:   Default wrapping (safe but performs worst)\n"
+		"\n"
+	);
 }
 
 char	*read_file(const char *name)
@@ -214,10 +239,13 @@ void compile_c(char *name)
 
 int main(int argc, char **argv)
 {
-	char *filename = NULL;
-	char *outname = "bfout";
-	bool strict = true;
-	bool shstrm = false;
+	char	*filename = NULL;
+	char	*outname = "bfout";
+	bool	strict = true;
+	bool	shstrm = false;
+	bool	wrap = true;
+	bool	heap = false;
+	size_t	stsize = 65536;
 
 	if (argc < 2)
 	{
@@ -230,6 +258,19 @@ int main(int argc, char **argv)
 			strict = false;
 		else if (strcmp(argv[i], "--dmp-tok") == 0) 
 			shstrm = true;
+	  	else if (strcmp(argv[i], "--no-wrap") == 0) 
+			heap = true;
+	  	else if (strcmp(argv[i], "--use-heap") == 0) 
+			wrap = false;
+		else if (strncmp(argv[i], "--stacksize=", 12) == 0)
+		{
+			stsize = lv_atoul(*(argv + i) + 12);
+			if (!stsize)
+			{
+				fprintf(stderr, "Invalid stacksize\n");
+				return (EXIT_FAILURE);
+			}
+		}
 		else if (strcmp(argv[i], "--help") == 0) 
 		{
 			phelp();
@@ -261,7 +302,10 @@ int main(int argc, char **argv)
 		return (0);
 	}
 	printf("[lvbfc] compiling\n");
-	emit(&o);
+	if (heap)
+		emit_heap(&o);
+	else
+		emit(&o, wrap, stsize);
 	compile_c(outname);
 	printf("[lvbfc] compililed successfully!\n");
 	return (0);

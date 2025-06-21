@@ -6,6 +6,7 @@
 #include <string.h>
 #include "llv/vec.h"
 #include "llv/mem.h"
+#include "llv/conv.h"
 
 #define THROW_ERR(msg, vec, ...) \
 	do { \
@@ -34,5 +35,6 @@ typedef	struct tokenseq
 	size_t	len;
 }	t_tokenseq;
 
-void	emit(t_vec *v);
+void	emit(t_vec *v, bool w, size_t stsize);
+void	emit_heap(t_vec *v);
 #endif
