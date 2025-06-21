@@ -18,25 +18,25 @@ void emit(t_vec *v)
 		"#include <string.h>\n"
 		"#include <stdint.h>\n"
 		"#include <stdlib.h>\n\n"
-		"#define GROW_BUF(n) \\\n"
-		"do { \\\n"
-		"    size_t offset = buf - safeg; \\\n"
-		"    if (offset + (n) >= size) { \\\n"
-		"        size_t new_size = (offset + (n)) * 2; \\\n"
-		"        uint8_t *new_buf = realloc(safeg, new_size); \\\n"
-		"        if (!new_buf) { perror(\"realloc failed\"); exit(EXIT_FAILURE); } \\\n"
-		"        safeg = new_buf; \\\n"
-		"        buf = safeg + offset; \\\n"
-		"        __builtin_memset(safeg + size, 0, new_size - size); \\\n"
-		"        size = new_size; \\\n"
-		"    } \\\n"
-		"} while (0)\n\n"
+		"#define GROW_BUF(n) \\\n" \
+		"do { \\\n" \
+		"  size_t offset = buf - safeg; \\\n" \
+		"  if (offset + (n) >= size) { \\\n" \
+		"    size_t new_size = (offset + (n)) * 2; \\\n" \
+		"    uint8_t *new_buf = realloc(safeg, new_size); \\\n" \
+		"    if (!new_buf) { perror(\"realloc failed\"); exit(EXIT_FAILURE); } \\\n" \
+		"    safeg = new_buf; \\\n" \
+		"    buf = safeg + offset; \\\n" \
+		"    memset(safeg + size, 0, new_size - size); \\\n" \
+		"    size = new_size; \\\n" \
+		"  } \\\n" \
+		"} while (0)\n"
 		"int main(void) {"
-		"uint8_t *buf = aligned_alloc(512, 65536);"
-		"if (!buf) { perror(\"unable to allocate space\"); return EXIT_FAILURE; }"
-		"size_t size = 65536;"
-		"__builtin_memset(buf, 0, 65536);"
-		"uint8_t *safeg = buf;");
+		"uint8_t *original = calloc(512, 65536);"
+		"if (!original) { perror(\"unable to allocate space\"); return EXIT_FAILURE; }"
+		"uint8_t *safeg = original;"
+		"uint8_t *buf = safeg;"
+		"size_t size = 65536;");
 	size_t i = 0;
 	while (i < v->size)
 	{
@@ -46,7 +46,7 @@ void emit(t_vec *v)
 			case '>': fprintf(f, "GROW_BUF(%lu);buf += %lu;", x.len, x.len); break;
 			case '<':
 			fprintf(f,
-				"if ((size_t)(buf - safeg) < %lu) { fprintf(stderr, \"underflow at runtime\\n\"); free(safeg);exit(1); } buf -= %lu;",
+				"if ((size_t)(buf - safeg) < %lu) { fprintf(stderr, \"underflow at runtime\\n\"); free(original);exit(1); } buf -= %lu;",
 				x.len, x.len);
 			break;
 			case '+': fprintf(f, "*buf += %lu;", x.len); break;
@@ -111,24 +111,24 @@ void emit_opt(t_vec *v)
 		"#include <stdint.h>\n"
 		"#include <stdlib.h>\n\n"
 		"#define GROW_BUF(n) \\\n"
-		"do { \\\n"
-		"    size_t offset = buf - safeg; \\\n"
-		"    if (offset + (n) >= size) { \\\n"
-		"        size_t new_size = (offset + (n)) * 2; \\\n"
-		"        uint8_t *new_buf = realloc(safeg, new_size); \\\n"
-		"        if (!new_buf) { perror(\"realloc failed\"); exit(EXIT_FAILURE); } \\\n"
-		"        safeg = new_buf; \\\n"
-		"        buf = safeg + offset; \\\n"
-		"        __builtin_memset(safeg + size, 0, new_size - size); \\\n"
-		"        size = new_size; \\\n"
-		"    } \\\n"
-		"} while (0)\n\n"
+		"do { \\\n" \
+		"  size_t offset = buf - safeg; \\\n" \
+		"  if (offset + (n) >= size) { \\\n" \
+		"    size_t new_size = (offset + (n)) * 2; \\\n" \
+		"    uint8_t *new_buf = realloc(safeg, new_size); \\\n" \
+		"    if (!new_buf) { perror(\"realloc failed\"); exit(EXIT_FAILURE); } \\\n" \
+		"    safeg = new_buf; \\\n" \
+		"    buf = safeg + offset; \\\n" \
+		"    memset(safeg + size, 0, new_size - size); \\\n" \
+		"    size = new_size; \\\n" \
+		"  } \\\n" \
+		"} while (0)\n"
 		"int main(void) {"
-		"uint8_t *buf = aligned_alloc(512, 65536);"
-		"if (!buf) { perror(\"unable to allocate space\"); return EXIT_FAILURE; }"
-		"size_t size = 65536;"
-		"__builtin_memset(buf, 0, 65536);"
-		"uint8_t *safeg = buf;");
+		"uint8_t *original = calloc(512, 65536);"
+		"if (!original) { perror(\"unable to allocate space\"); return EXIT_FAILURE; }"
+		"uint8_t *safeg = original;"
+		"uint8_t *buf = safeg;"
+		"size_t size = 65536;");
 	size_t i = 0;
 	while (i < v->size)
 	{
@@ -178,7 +178,7 @@ void emit_opt(t_vec *v)
 			case '>': fprintf(f, "GROW_BUF(%lu);buf += %lu;", x.len, x.len); break;
 			case '<':
 			fprintf(f,
-				"if ((size_t)(buf - safeg) < %lu) { fprintf(stderr, \"underflow at runtime\\n\"); free(safeg);exit(1); } buf -= %lu;",
+				"if ((size_t)(buf - safeg) < %lu) { fprintf(stderr, \"underflow at runtime\\n\"); free(original);exit(1); } buf -= %lu;",
 				x.len, x.len);
 			break;
 			case '+': fprintf(f, "*buf += %lu;", x.len); break;

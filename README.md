@@ -44,4 +44,4 @@ Note: --opt flag introduces nontrivial macro expansion logic to the C compiler, 
 
 ## Tests
 
-Includes some of the tests shown here: https://brainfuck.org/tests.b
+Includes some of the tests shown here: https://brainfuck.org/tests.b (they are really cool check them out)
