@@ -82,14 +82,14 @@ void emit(t_vec *v, bool w, size_t s)
 		{
 			case '>':
 				if (w)
-					fprintf(f, "buf = arr + ((buf - arr + %lu) %% 65536);", x.len);
+					fprintf(f, "buf = arr + ((buf - arr + %lu) %% %lu);", x.len, s);
 				else
 					fprintf(f, "buf += %lu;", x.len);
 				break;
 
 			case '<':
 				if (w)
-					fprintf(f, "buf = arr + ((buf - arr + 65536 - %lu) %% 65536);", x.len);
+					fprintf(f, "buf = arr + ((buf - arr + %lu - %lu) %% %lu);", s, x.len, s);
 				else
 					fprintf(f, "buf -= %lu;", x.len);
 				break;
