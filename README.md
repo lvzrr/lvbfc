@@ -1,4 +1,4 @@
-# lvbfc
+# lvbfc (lv's Brain Fuck Compiler)
 
 Brainfuck-to-C optimizing compiler written in C, using the [llv](https://github.com/lvzrr/llv) library.
 
