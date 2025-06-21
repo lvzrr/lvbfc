@@ -74,7 +74,7 @@ Suggestions:
 |----------------------|--------------|------------------|----------------|------|----------------|
 | lvbfc (--no-wrap)    | 0.623 s      | 4.31 billion     | 2.63 billion   | 1.64 | 4.34%          |
 | lvbfc (--use-heap)   | 0.985 s      | 4.31 billion     | 2.63 billion   | 1.64 | 4.36%          |
-| bfjitc               | 1.586 s      | 5.54 billion     | 3.59 billion   | 1.54 | 4.00%          |
+| [bfjitc](https://github.com/tsoding/bfjit)               | 1.586 s      | 5.54 billion     | 3.59 billion   | 1.54 | 4.00%          |
 | lvbfc (--no-wrap 30k)| 1.631 s      | 11.50 billion    | 4.18 billion   | 2.75 | 1.45%          |
 | lvbfc (default wrap) | 3.014 s      | 14.08 billion    | 10.87 billion  | 1.29 | 2.83%          |
 
