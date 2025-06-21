@@ -7,6 +7,9 @@ Brainfuck-to-C optimizing compiler written in C, using the [llv](https://github.
 - Converts Brainfuck code into """optimized""" C
 - Optional optimizations for patterns like [-], ->+<, etc.
 - Strict mode for loop sanity checks (honestly is too much but whatever)
+- Operation cancellation/balancing
+- Code sanitization, dead code removal
+- Infinite loop removal '[]'
 - Output compiles to a native binary
 - Wrapping buffer, no memory unbound actions
 
