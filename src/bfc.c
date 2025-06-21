@@ -1,5 +1,37 @@
 #include "bfc.h"
 
+static inline	void phelp(void)
+{
+    printf(
+        "bfc - Brainfuck compiler\n"
+        "---------------------------------------------------\n"
+        "Usage:\n"
+        "  ./bfc <input.b> [output] [options]\n"
+        "\n"
+        "Options:\n"
+        "  --no-strict       Disable safety checks for loops\n"
+        "                    Ignores checks for potentially infinite loops\n"
+        "\n"
+        "  --bound-30k       Use legacy 30,000-cell memory model\n"
+        "                    Faster, dumber, and prone to all the fun bugs\n"
+        "                    Good for benchmarks, bad for safety\n"
+        "\n"
+        "  --opt             Enable token stream optimization\n"
+        "                    Compresses redundant instructions (e.g. ++++)\n"
+        "                    Recognizes simple idioms like [-] as clear cell\n"
+        "\n"
+        "  --dmp-tok         Print parsed token stream\n"
+        "                    For debugging\n"
+        "\n"
+        "  --help           Print this very help message\n"
+        "\n"
+        "Output:\n"
+        "  Produces a compiled C file and builds it to a native binary.\n"
+        "  Uses GCC or Clang.\n"
+        "\n"
+    );
+}
+
 char	*read_file(const char *name)
 {
 	FILE *f = fopen(name,"rb");
@@ -197,6 +229,11 @@ int main(int argc, char **argv)
 	bool shstrm = false;
 	bool bounded = false;
 
+	if (argc < 2)
+	{
+		phelp();
+		exit(EXIT_FAILURE);
+	}
 	for (int i = 1; i < argc; i++)
 	{
 		if (strcmp(argv[i], "--no-strict") == 0) 
@@ -209,8 +246,9 @@ int main(int argc, char **argv)
 			opts = true;
 		else if (strncmp(argv[i], "--", 2) == 0) 
 		{
-			fprintf(stderr, "Unknown flag: %s\n", argv[i]);
-			return EXIT_FAILURE;
+			fprintf(stderr, "Unknown flag: %s\n\n", argv[i]);
+			phelp();
+			return (EXIT_FAILURE);
 		}
 		else if (!filename) 
 			filename = argv[i];
