@@ -3,8 +3,6 @@
 #include "llv/vec.h"
 #include <string.h>
 
-// this is a compiler the same way gcc is a transpiler
-
 #define THROW_ERR(msg, vec, ...) \
 	do { \
 		fprintf(stderr, "\033[1;31m" msg "\033[0m\n", ##__VA_ARGS__); \
@@ -411,6 +409,111 @@ void emit_opt(t_vec *v)
 	lv_vec_free(v);
 }
 
+
+void emit_bounded(t_vec *v)
+{
+#ifdef __WIN32
+	FILE *f = fopen("C:"SEP"tmp"SEP"bf.c", "w");
+# else
+	FILE *f = fopen(SEP"tmp"SEP"bf.c", "w");
+#endif
+	if (!f)
+	{
+		fprintf(stderr, "\033[1;31mUnable to create .c file\033[0m\n");
+		lv_vec_free(v);
+		exit(EXIT_FAILURE);
+	}
+	fprintf(f,
+		"#include <stdio.h>\n"
+		"#include <string.h>\n"
+		"#include <stdint.h>\n"
+		"#include <stdlib.h>\n\n"
+		"int main(void) {"
+		"uint8_t arr[30000] = {0};"
+		"uint8_t *buf = &(arr[0]);");
+	size_t i = 0;
+	while (i < v->size)
+	{
+		t_tokenseq x = *((t_tokenseq *)lv_vec_get(v, i));
+		if (match_expr(v, i, "[-]")) {
+			const t_tokenseq *c = lv_vec_get(v, i + 1);
+			fprintf(f,
+				"/* [-] */__builtin_memset(buf, 0, %lu);",
+				c->len);
+				i += 3;
+			continue;
+		}
+		if (match_expr(v, i, "->+<")) {
+
+			const t_tokenseq *a = lv_vec_get(v, i + 1);
+			const t_tokenseq *c = lv_vec_get(v, i + 2);
+			const t_tokenseq *d = lv_vec_get(v, i + 3);
+			if (a->len == c->len && c->len == d->len)
+			{
+				size_t offset = d->len;
+				size_t scale = c->len;
+				fprintf(f,
+					"/* ->+< */"
+					"*(buf + %lu) += *buf * %lu; "
+					"*buf = 0;",
+					offset, scale);
+				i += 4;
+			continue;
+			}
+		}
+		if (match_expr(v, i, "Z+"))
+		{
+			const t_tokenseq *x = lv_vec_get(v, i + 1);
+			fprintf(f, " /* Z+ */ *buf = %lu;", x->len);
+			i += 2;
+			continue;
+		}
+		if (match_expr(v, i, "Z-"))
+		{
+			const t_tokenseq *x = lv_vec_get(v, i + 1);
+			fprintf(f, " /* Z- */ *buf = *buf - %lu;", 256 - x->len);
+			i += 2;
+			continue;
+		}
+		switch (x.op)
+		{
+			case '>': fprintf(f, "buf += %lu;", x.len); break;
+			case '<':
+			fprintf(f,
+				"buf -= %lu;",
+				x.len);
+			break;
+			case '+': fprintf(f, "*buf += %lu;", x.len); break;
+			case '-': fprintf(f, "*buf -= %lu;", x.len); break;
+			case '.': fprintf(f, "fputc(*buf, stdout);"); break;
+			case ',': 
+				for (size_t j = 0; j < x.len; j++)
+					fprintf(f, "*buf = getchar();");
+				break;
+			case '[':
+				for (size_t j = 0; j < x.len; j++)
+					fprintf(f, "while (*buf) {");
+				break;
+
+			case ']':
+				for (size_t j = 0; j < x.len; j++)
+					fprintf(f, "}");
+				break;
+			case 'Z':
+					fprintf(f, "__builtin_memset(buf, 0, %lu);", x.len);
+				break;
+			default: break;
+		}
+		i++;
+	}
+	fprintf(f,
+		"return 0;"
+		"}\n");
+
+	fclose(f);
+	lv_vec_free(v);
+}
+
 void compile_c(char *name)
 {
 	char cmd[256] = {0};
@@ -440,11 +543,14 @@ int main(int argc, char **argv)
 	bool strict = true;
 	bool opts = false;
 	bool shstrm = false;
+	bool bounded = false;
 
 	for (int i = 1; i < argc; i++)
 	{
 		if (strcmp(argv[i], "--no-strict") == 0) 
 			strict = false;
+		else if (strcmp(argv[i], "--bound-30k") == 0) 
+			bounded = true;
 		else if (strcmp(argv[i], "--dmp-tok") == 0) 
 			shstrm = true;
 		else if (strcmp(argv[i], "--opt") == 0) 
@@ -468,15 +574,23 @@ int main(int argc, char **argv)
 	if (!src)
 		return EXIT_FAILURE;
 	t_vec o = lex(src, strict, shstrm);
-	if (!opts)
+	if (bounded)
 	{
-		printf("[bfc] compiling unoptimized\n");
-		emit(&o);
+		printf("[bfc] compiling legacy (unsafe 30k stack'd)\n");
+		emit_bounded(&o);
 	}
 	else
 	{
-		printf("[bfc] compiling optimized\n");
-		emit_opt(&o);
+		if (!opts)
+		{
+			printf("[bfc] compiling unoptimized\n");
+			emit(&o);
+		}
+		else
+		{
+			printf("[bfc] compiling optimized\n");
+			emit_opt(&o);
+		}
 	}
 	compile_c(outname);
 	return (0);
