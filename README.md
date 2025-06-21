@@ -28,3 +28,13 @@ make
 - A C compiler (GCC or Clang)
 - make
 - Linux or POSIX system (or Windows with changes)
+
+## Mandelbrot Benchmark (compiled with `bfc`)
+
+| Metric               | Value              |
+|----------------------|--------------------|
+| **Time elapsed**     | 0.999 s            |
+| **Instructions**     | 11.5 billion       |
+| **Cycles**           | 4.21 billion       |
+| **IPC**              | 2.73               |
+| **Branch misses**    | 1.44%              |
