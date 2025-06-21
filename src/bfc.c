@@ -269,6 +269,11 @@ int main(int argc, char **argv)
 	if (!src)
 		return EXIT_FAILURE;
 	t_vec o = lex(src, strict, shstrm);
+	if (shstrm)
+	{
+		lv_vec_free(&o);
+		return (0);
+	}
 	if (bounded)
 	{
 		printf("[bfc] compiling legacy (unsafe 30k stack'd)\n");

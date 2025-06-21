@@ -173,6 +173,11 @@ void emit_opt(t_vec *v)
 			i += 2;
 			continue;
 		}
+		if (!x.len)
+		{
+			i++;
+			continue ;
+		}
 		switch (x.op)
 		{
 			case '>': fprintf(f, "GROW_BUF(%lu);buf += %lu;", x.len, x.len); break;
