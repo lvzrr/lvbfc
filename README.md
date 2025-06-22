@@ -201,7 +201,7 @@ buf -= 7;
 if (execbuf == MAP_FAILED) { perror("mmap failed"); exit(EXIT_FAILURE); }
 __builtin_memcpy(execbuf, buf, 8);
 ((void(*)(uint8_t *))execbuf)(buf);
-__builtin_memset(execbuf, 0, 512);
+__builtin_memset(execbuf, 0, 8);
 munmap(execbuf, 512);
 return 0;
 }
