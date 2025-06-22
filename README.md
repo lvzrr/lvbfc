@@ -102,6 +102,7 @@ ret
 ### Bytes
 
 Hex: b8 27 00 00 00 0f 05 c3
+
 Decimal: 184, 39, 0, 0, 0, 15, 5, 195
 
 ### Example Brainfuck Program (`getpid.b`)
@@ -181,7 +182,7 @@ Decimal: 184, 39, 0, 0, 0, 15, 5, 195
 * Because the syscall has no output, you'll only see effects with strace or a debugger.
 
 >[!NOTE]
-> `getpid.b` can be found in the tests/ folder
+> `getpid.b` can be found in `tests/`
 
 ## TODO
 
