@@ -277,14 +277,7 @@ int main(int argc, char **argv)
 			}
 		}
 		else if (strncmp(argv[i], "--opt-level=", 12) == 0)
-		{
 			optl = lv_atoul(*(argv + i) + 12);
-			if (!stsize)
-			{
-				fprintf(stderr, "Invalid stacksize\n");
-				return (EXIT_FAILURE);
-			}
-		}
 		else if (strcmp(argv[i], "--help") == 0) 
 		{
 			phelp();
