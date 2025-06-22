@@ -42,6 +42,7 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 	t_tokenseq	*prev = {0};
 	t_vec		out = {0};
 	const char 		*ogp = src;
+	size_t		wc = 0;
 
 	out = lv_vec(100, sizeof(t_tokenseq));
 	while (*src)
@@ -124,15 +125,18 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 			plevel -= x2->len;
 		if (x2->op == '[' && i + 2 < out.size
 			&& (x2 + 1)->op != '-' && (x2 + 1)->len == 1 && (x2 + 2)->op == ']')
-			{
+		{
 				if (strict)
 				{
 					free((char *)ogp);
 					THROW_ERR_AT(i, "potential infinite loop [%c] detected in the code (run with --no-strict to ignore)", out, (x2 + 1)->op);
 				}
-				else
-					fprintf(stderr, "\033[1;33mWARNING: potential infinite loop [%c] detected @ seq. %lu\033[0m\n", (x2 + 1)->op, i);
+				else if (strict && wc < 5)
+			{
+				fprintf(stderr, "\033[1;33mWARNING: potential infinite loop [%c] detected @ seq. %lu\033[0m\n", (x2 + 1)->op, i);
+				++wc;
 			}
+		}
 		if (x2->op == '[')
 		{
 			size_t i2 = i + 1;
@@ -154,8 +158,16 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 				free((char *)ogp);
 				THROW_ERR_AT(i, "potential infinite loop (no '-') detected (run with --no-strict to ignore)", out);
 			}
-			else if (!strict && !hasm)
+			else if (!strict && !hasm && wc < 5)
+			{
 				fprintf(stderr, "\033[1;33mWARNING: potential dangerous loop (no '-' in loop) detected @ seq. %lu\033[0m\n", i);
+				++wc;
+			}
+			if (wc == 5)
+			{
+				fprintf(stderr, "\033[1;33mExceeded max number warnings\033[0m\n");
+				++wc;
+			}
 		}
 
 		if (dmp)
