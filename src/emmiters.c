@@ -19,8 +19,8 @@ void emit(t_vec *v, bool w, size_t s, size_t l)
 		"#include <stdint.h>\n"
 		"#include <stdlib.h>\n\n"
 		"int main(void) {"
-		"uint8_t arr[%lu] = {0};"
-		"uint8_t *buf = &(arr[0]);", s);
+		"uint8_t arr[%lu] = {0};\n"
+		"uint8_t *buf = &(arr[0]);\n", s);
 	size_t i = 0;
 	optimize(v, l);
 	while (i < v->size)
@@ -30,31 +30,31 @@ void emit(t_vec *v, bool w, size_t s, size_t l)
 		{
 			case '>':
 				if (w)
-					fprintf(f, "buf = arr + ((buf - arr + %lu) %% %lu);", x.len, s);
+					fprintf(f, "buf = arr + ((buf - arr + %lu) %% %lu);\n", x.len, s);
 				else
-					fprintf(f, "buf += %lu;", x.len);
+					fprintf(f, "buf += %lu;\n", x.len);
 				break;
 			case '<':
 				if (w)
-					fprintf(f, "buf = arr + ((buf - arr + %lu - %lu) %% %lu);", s, x.len, s);
+					fprintf(f, "buf = arr + ((buf - arr + %lu - %lu) %% %lu);\n", s, x.len, s);
 				else
-					fprintf(f, "buf -= %lu;", x.len);
+					fprintf(f, "buf -= %lu;\n", x.len);
 				break;
 			case '+':
-				fprintf(f, "*buf += %lu;", x.len);
+				fprintf(f, "*buf += %lu;\n", x.len);
 				break;
 
 			case '-':
-				fprintf(f, "*buf -= %lu;", x.len);
+				fprintf(f, "*buf -= %lu;\n", x.len);
 				break;
 
 			case '.':
 				for (size_t j = 0; j < x.len; j++)
-					fprintf(f, "fputc(*buf, stdout);");
+					fprintf(f, "fputc(*buf, stdout);\n");
 				break;
 			case ',':
 				for (size_t j = 0; j < x.len; j++)
-					fprintf(f, "*buf = getchar();");
+					fprintf(f, "*buf = getchar();\n");
 				break;
 			case '[':
 				for (size_t j = 0; j < x.len; j++)
@@ -65,23 +65,23 @@ void emit(t_vec *v, bool w, size_t s, size_t l)
 					fprintf(f, "}");
 				break;
 			case 'A':
-				fprintf(f, "*buf = %lu;", x.len);
+				fprintf(f, "*buf = %lu;\n", x.len);
 			break;
 			case 'S':
-				fprintf(f, "*buf = -((unsigned char)%lu);", x.len);
+				fprintf(f, "*buf = -((unsigned char)%lu);\n", x.len);
 			break;
 			case 'Z':
-				fprintf(f, "*buf = 0;");
+				fprintf(f, "*buf = 0;\n");
 			break;
 			case 'M':
 				fprintf(f,
-					"{ uint8_t tmp = buf[0]; buf[0] = 0;"
+					"{ uint8_t tmp = buf[0]; buf[0] = 0;\n"
 					"for (size_t j = 0; j < %lu; j++) buf[j + 1] += tmp; }",
 					x.len);
 				break;
 			case 'C':
 				fprintf(f,
-					"{ uint8_t tmp = buf[0]; buf[0] = 0;"
+					"{ uint8_t tmp = buf[0]; buf[0] = 0;\n"
 					"for (size_t j = 0; j < %lu; j++) buf[j + 1] += tmp; }",
 					x.len);
 				break;
@@ -90,7 +90,7 @@ void emit(t_vec *v, bool w, size_t s, size_t l)
 		i++;
 	}
 	fprintf(f,
-		"return 0;"
+		"return 0;\n"
 		"}\n");
 
 	fclose(f);
@@ -131,11 +131,11 @@ void	emit_heap(t_vec *v, size_t op)
 		"    } \\\n"
 		"} while (0)\n\n"
 		"int main(void) {"
-		"uint8_t *buf = aligned_alloc(512, 65536);"
+		"uint8_t *buf = aligned_alloc(512, 65536);\n"
 		"if (!buf) { perror(\"unable to allocate space\"); return EXIT_FAILURE; }"
-		"size_t size = 65536;"
-		"__builtin_memset(buf, 0, 65536);"
-		"uint8_t *safeg = buf;");
+		"size_t size = 65536;\n"
+		"__builtin_memset(buf, 0, 65536);\n"
+		"uint8_t *safeg = buf;\n");
 	size_t i = 0;
 	optimize(v, op);
 	while (i < v->size)
@@ -144,30 +144,30 @@ void	emit_heap(t_vec *v, size_t op)
 		switch (x.op)
 		{
 			case '>':
-				fprintf(f, "GROW_BUF(%lu); buf += %lu;", x.len, x.len);
+				fprintf(f, "GROW_BUF(%lu); buf += %lu;\n", x.len, x.len);
 				break;
 
 			case '<':
 				fprintf(f,
-					"buf = (buf - safeg < %lu) ? safeg + size - %lu : buf - %lu;",
+					"buf = (buf - safeg < %lu) ? safeg + size - %lu : buf - %lu;\n",
 					x.len, x.len, x.len);
 				break;
 
 			case '+':
-				fprintf(f, "*buf += %lu;", x.len);
+				fprintf(f, "*buf += %lu;\n", x.len);
 				break;
 
 			case '-':
-				fprintf(f, "*buf -= %lu;", x.len);
+				fprintf(f, "*buf -= %lu;\n", x.len);
 				break;
 
 			case '.':
 				for (size_t j = 0; j < x.len; j++)
-					fprintf(f, "fputc(*buf, stdout);");
+					fprintf(f, "fputc(*buf, stdout);\n");
 				break;
 			case ',':
 				for (size_t j = 0; j < x.len; j++)
-					fprintf(f, "*buf = getchar();");
+					fprintf(f, "*buf = getchar();\n");
 				break;
 
 			case '[':
@@ -180,34 +180,34 @@ void	emit_heap(t_vec *v, size_t op)
 					fprintf(f, "}");
 				break;
 			case 'Z':
-				fprintf(f, "*buf = 0;");
+				fprintf(f, "*buf = 0;\n");
 			break;
 			case 'A':
-				fprintf(f, "*buf = %lu;", x.len);
+				fprintf(f, "*buf = %lu;\n", x.len);
 			break;
 			case 'S':
-				fprintf(f, "*buf = -((unsigned char)%lu);", x.len);
+				fprintf(f, "*buf = -((unsigned char)%lu);\n", x.len);
 			break;
 			case 'M':
 				fprintf(f,
-					"{ uint8_t tmp = buf[0]; buf[0] = 0;"
+					"{ uint8_t tmp = buf[0]; buf[0] = 0;\n"
 					"for (size_t j = 0; j < %lu; j++) buf[j + 1] += tmp; }",
 					x.len);
 				break;
 
 			case 'C':
 				fprintf(f,
-					"{ uint8_t tmp = buf[0]; buf[0] = 0;"
+					"{ uint8_t tmp = buf[0]; buf[0] = 0;\n"
 					"for (size_t j = 0; j < %lu; j++) buf[j + 1] += tmp; }",
 					x.len);
 				break;
 			case ';':
 				fprintf(f,
-					"void *execbuf = mmap(NULL, %lu, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);"
+					"void *execbuf = mmap(NULL, %lu, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);\n"
 					"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }"
-					"memcpy(execbuf, buf, %lu);"
-					"((void(*)(uint8_t *))execbuf)(buf);"
-					"munmap(execbuf, %lu);",
+					"memcpy(execbuf, buf, %lu);\n"
+					"((void(*)(uint8_t *))execbuf)(buf);\n"
+					"munmap(execbuf, %lu);\n",
 					x.len, x.len, x.len);
 				break;
 			default:
@@ -217,8 +217,8 @@ void	emit_heap(t_vec *v, size_t op)
 	}
 
 	fprintf(f,
-		"free(safeg);"
-		"return 0;"
+		"free(safeg);\n"
+		"return 0;\n"
 		"}");
 
 	fclose(f);
