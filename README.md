@@ -42,6 +42,9 @@ Options:
   --x               Enable syscall shellcode emit mode (experimental)
                     Use `;` x N to mark syscall byte count
 
+  --allow-canary    Enable `?` instruction to emit /* CANARY */ comment
+                    Useful for instrumentation and debug boundaries
+
   --stacksize=N     Initial memory size in bytes (default: 65536)
 
   --opt-level=N     Optimization passes (default: 3)
