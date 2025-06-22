@@ -24,7 +24,8 @@ void	opt_openl(t_vec *v, size_t i)
 				i++;
 				curr++;
 			}
-			remove_t(curr);
+			curr->len--;
+			if (!curr->len) remove_t(curr);
 			i++;
 			curr++;
 		}
