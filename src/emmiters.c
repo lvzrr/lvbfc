@@ -96,6 +96,9 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool x)
 					"__builtin_memset(execbuf, 0, %lu);\n",
 					x.len, x.len);
 				break;
+			case '?':
+				fprintf(f,"/*\n\n CANARY \n\n */");
+				break;
 			default: break;
 		}
 		i++;
@@ -224,6 +227,9 @@ void	emit_heap(t_vec *v, size_t op, bool x)
 					"((void(*)(uint8_t *))execbuf)(buf);\n"
 					"__builtin_memset(execbuf, 0, %lu);\n",
 					x.len, x.len);
+				break;
+			case '?':
+				fprintf(f,"/*\n\n CANARY \n\n */");
 				break;
 			default:
 				break;

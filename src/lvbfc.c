@@ -83,6 +83,7 @@ int main(int argc, char **argv)
 	size_t	stsize = 65536;
 	size_t	optl = 1;
 	bool	x = false;
+	bool	can = false;
 
 	if (argc < 2)
 	{
@@ -97,6 +98,8 @@ int main(int argc, char **argv)
 			shstrm = true;
 	  	else if (strcmp(argv[i], "--no-wrap") == 0) 
 			wrap = false;
+	  	else if (strcmp(argv[i], "--allow-canary") == 0) 
+			can = true;
 	  	else if (strcmp(argv[i], "--opts") == 0) 
 			heap = true;
 	  	else if (strcmp(argv[i], "--x") == 0) 
@@ -136,7 +139,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "no file to compile\n");
 		return EXIT_FAILURE;
 	}
-	char *src = read_file(filename, x);
+	char *src = read_file(filename, x, can);
 	if (!src)
 		return EXIT_FAILURE;
 	t_vec o = lex(src, strict, shstrm);

@@ -1,6 +1,6 @@
 #include "lvbfc.h"
 
-char	*read_file(const char *name, bool x)
+char	*read_file(const char *name, bool x, bool can)
 {
 	FILE *f = fopen(name,"rb");
 	if (!f)
@@ -21,11 +21,12 @@ char	*read_file(const char *name, bool x)
 	size_t i = 0;
 	while ((c = fgetc(f)) != EOF)
 	{
-		if (!x && !(c == '>' || c == '<' || c == '+' || c == '-' ||
+		if (x && c == ';')
+			src[i++] = c;
+		if (can && c == '?')
+			src[i++] = c;
+		if (!(c == '>' || c == '<' || c == '+' || c == '-' ||
 			c == '.' || c == ',' || c == '[' || c == ']'))
-			continue ;
-		else if (x && !(c == '>' || c == '<' || c == '+' || c == '-' ||
-			c == '.' || c == ',' || c == '[' || c == ']' || c == ';'))
 			continue ;
 		src[i++] = c;
 	}
