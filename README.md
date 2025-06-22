@@ -54,7 +54,7 @@ Examples:
   ./lvbfc file.b --stacksize=0  # invalid → error
 
 Suggestions:
-  - Fastest + Safer:     --no-wrap --opt-level=5
+  - Fastest:             --no-wrap --opt-level=5
   - Mid‑range:           --opts --opt-level=5 (heap)
   - Safe default:        no flags
 ```

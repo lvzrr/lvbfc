@@ -39,7 +39,7 @@ static inline void phelp(void)
 		"  ./lvbfc file.b --stacksize=0  # invalid → error\n"
 		"\n"
 		"Suggestions:\n"
-		"  - Fastest + Safer:     --no-wrap --opt-level=5\n"
+		"  - Fastest:             --no-wrap --opt-level=5\n"
 		"  - Mid‑range:           --opts --opt-level=5 (heap)\n"
 		"  - Safe default:        no flags\n"
 		"\n"
