@@ -75,7 +75,7 @@ Compiler             | Time Elapsed | Instructions     | Cycles         | IPC  |
 ---------------------|--------------|------------------|----------------|------|----------------
 lvbfc (--opts)       | 0.640 s      | 4.31 billion     | 2.64 billion   | 1.63 | 4.38%
 lvbfc (--no-wrap)    | 1.112 s      | 11.74 billion    | 4.68 billion   | 2.51 | 2.03%
-bfjitc               | 1.586 s      | 5.54 billion     | 3.59 billion   | 1.54 | 4.00%
+[bfjitc](https://github.com/tsoding/bfjit)               | 1.586 s      | 5.54 billion     | 3.59 billion   | 1.54 | 4.00%
 lvbfc (--no-wrap 30k)| 1.631 s      | 11.50 billion    | 4.18 billion   | 2.75 | 1.45%
 lvbfc (default wrap) | 3.014 s      | 14.08 billion    | 10.87 billion  | 1.29 | 2.83%
 
