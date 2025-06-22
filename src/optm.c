@@ -23,6 +23,19 @@ void	opt_openl(t_vec *v, size_t i)
 		remove_t(a);
 		*a = (t_tokenseq){ .op = 'Z', .len = 1 };
 	}
+	else if (a->op == '[' && b->op == '-' && c->op == ']' &&
+		b->len == 1)
+	{
+		remove_t(b);
+		a->len--;
+		if (!a->len) remove_t(a);
+		c->len--;
+		if (!c->len) remove_t(c);
+		if (!a->op)
+			*a = (t_tokenseq){ .op = 'Z', .len = 1 };
+		else
+			*(a + 1) = (t_tokenseq){ .op = 'Z', .len = 1 };
+	}
 
 	// /* [->+<] -> 'M' */
 	if (i + 5 >= v->size) return;
