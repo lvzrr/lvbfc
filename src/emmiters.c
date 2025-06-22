@@ -56,14 +56,8 @@ void emit(t_vec *v, bool w, size_t s, size_t l)
 					fprintf(f, "}");
 				break;
 			case 'Z':
-				fprintf(f, "__builtin_memset(buf, 0, %lu);", x.len);
-				break;
-			case 'E':
-				fprintf(f, "*buf = %lu;", x.len);
-				break;
-			case 'S':
-				fprintf(f, "*buf = -%lu;", x.len);
-				break;
+				fprintf(f, "*buf &= 0;");
+			break;
 			case 'M':
 				fprintf(f,
 					"{ uint8_t tmp = buf[0]; buf[0] = 0;"
@@ -172,17 +166,8 @@ void	emit_heap(t_vec *v, size_t op)
 				break;
 
 			case 'Z':
-				fprintf(f, "__builtin_memset(buf, 0, %lu);", x.len);
-				break;
-
-			case 'E':
-				fprintf(f, "*buf = %lu;", x.len);  // from zero, so this adds +len
-				break;
-
-			case 'S':
-				fprintf(f, "*buf = -%lu;", x.len);  // same, but negative
-				break;
-
+				fprintf(f, "*buf &= 0;");
+			break;
 			case 'M':
 				fprintf(f,
 					"{ uint8_t tmp = buf[0]; buf[0] = 0;"

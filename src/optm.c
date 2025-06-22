@@ -92,33 +92,6 @@ void	opt_openl(t_vec *v, size_t i)
 		*(l + 1) = (t_tokenseq){ .op = 'C', .len = dests };
 }
 
-void	opt_z(t_vec *v, size_t i)
-{
-	if (i + 1 >= v->size) return;
-	t_tokenseq *z 	= lv_vec_get_mut(v, i);
-	t_tokenseq *next = lv_vec_get_mut(v, i + 1);
-	if (!z || !next) return;
-
-	if (z->op == 'Z')
-	{
-		if (next->op == '+')
-		{
-			*z = (t_tokenseq){ .op = 'E', .len = next->len };
-			remove_t(next);
-		}
-		else if (next->op == '-')
-		{
-			*z = (t_tokenseq){ .op = 'S', .len = next->len };
-			remove_t(next);
-		}
-		else if (next->op == '>' || next->op == '<')
-		{
-			z->len += next->len;
-			remove_t(next);
-		}
-	}
-}
-
 void	compact_vector(t_vec *v)
 {
 	t_tokenseq *buf = (t_tokenseq *)v->data;
@@ -144,12 +117,8 @@ void	optimize(t_vec *v, size_t level)
 			const t_tokenseq *x = lv_vec_get(v, i);
 			if (!x) break; // only returns null on oob, so don't deref
 			if (x->op == 0 || x->len == 0) continue;
-			switch (x->op)
-			{
-				case '[': opt_openl(v, i); break;
-				// case 'Z': opt_z(v, i); break;
-				default: break;
-			}
+			if (x->op == '[')
+				opt_openl(v, i);
 		}
 		compact_vector(v);
 	}
