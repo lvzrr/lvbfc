@@ -1,6 +1,6 @@
 #include "lvbfc.h"
 
-void	remove_t(t_tokenseq *t)
+static inline void	remove_t(t_tokenseq *t)
 {
 	if (!t || !(t->op))
 		return ;
@@ -9,6 +9,43 @@ void	remove_t(t_tokenseq *t)
 
 void	opt_openl(t_vec *v, size_t i)
 {
+
+	/* remove loop for just-zeroed cell */
+
+	if (i > 0)
+	{
+		const t_tokenseq *prev = lv_vec_get(v, i - 1);
+		t_tokenseq *curr = lv_vec_get_mut(v, i);
+		if (prev && (prev->op == ']' || prev->op == 'Z'))
+		{
+			while (curr->op != ']')
+			{
+				remove_t(curr);
+				i++;
+				curr++;
+			}
+			remove_t(curr);
+			i++;
+			curr++;
+		}
+	}
+
+	/* Remove all loops @ the beggining */
+
+	if (i == 0)
+	{
+		t_tokenseq *curr = lv_vec_get_mut(v, i);
+		while (curr->op != ']')
+		{
+			remove_t(curr);
+			i++;
+			curr++;
+		}
+		remove_t(curr);
+		i++;
+		curr++;
+	}
+
 	/* [-] -> Z */
 	if (i + 2 >= v->size) return;
 	t_tokenseq *a = lv_vec_get_mut(v, i);
