@@ -163,6 +163,7 @@ void	emit_heap(t_vec *v)
 		"__builtin_memset(buf, 0, 65536);"
 		"uint8_t *safeg = buf;");
 	size_t i = 0;
+	optimize(v);
 	while (i < v->size)
 	{
 		t_tokenseq x = *((t_tokenseq *)lv_vec_get_mut(v, i));
