@@ -135,6 +135,7 @@ void	emit_heap(t_vec *v, size_t op)
 		"if (!buf) { perror(\"unable to allocate space\"); return EXIT_FAILURE; }"
 		"size_t size = 65536;\n"
 		"__builtin_memset(buf, 0, 65536);\n"
+		 "void *execbuf = mmap(NULL, 512, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);\n"
 		"uint8_t *safeg = buf;\n");
 	size_t i = 0;
 	optimize(v, op);
@@ -203,12 +204,15 @@ void	emit_heap(t_vec *v, size_t op)
 				break;
 			case ';':
 				fprintf(f,
-					"void *execbuf = mmap(NULL, %lu, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);\n"
-					"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }"
+					"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
 					"memcpy(execbuf, buf, %lu);\n"
+					"fprintf(stderr, \"buf dump:\\n\");\n"
+					"for (size_t i = 0; i < 512; i++) fprintf(stderr, \"%%02x%%s\", buf[i], (i + 1) %% 16 ? \" \" : \"\\n\");\n"
+					"fprintf(stderr, \"execbuf dump:\\n\");\n"
+					"for (size_t i = 0; i < 512; i++) fprintf(stderr, \"%%02x%%s\", ((uint8_t *)execbuf)[i], (i + 1) %% 16 ? \" \" : \"\\n\");\n"
 					"((void(*)(uint8_t *))execbuf)(buf);\n"
-					"munmap(execbuf, %lu);\n",
-					x.len, x.len, x.len);
+					"__builtin_memset(execbuf, 0, 512);\n",
+					x.len);
 				break;
 			default:
 				break;
@@ -218,6 +222,7 @@ void	emit_heap(t_vec *v, size_t op)
 
 	fprintf(f,
 		"free(safeg);\n"
+		"munmap(execbuf, 512);\n"
 		"return 0;\n"
 		"}");
 

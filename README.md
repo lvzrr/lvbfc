@@ -87,9 +87,103 @@ Python (brainfuck.py)                          | 1830.571 s | 25.19T         | 5
 
 Compliant with https://brainfuck.org/tests.b (included under tests/compliance) and includes various example programs.
 
+##  Syscall Mode Example: `getpid`
+
+This example shows how to use the `--x` shellcode injection mode to perform a simple syscall. We inject raw x86-64 shellcode into executable memory and jump into it.
+
+### Shellcode
+
+```asm
+mov eax, 39    ; syscall number for getpid
+syscall
+ret
+````
+
+### Bytes
+
+Hex: b8 27 00 00 00 0f 05 c3
+Decimal: 184, 39, 0, 0, 0, 15, 5, 195
+
+### Example Brainfuck Program (`getpid.b`)
+
+> This sets the memory buffer with the bytes above:
+
+```brainfuck
+++++++++++ 10
+++++++++++ 20
+++++++++++ 30
+++++++++++ 40
+++++++++++ 50
+++++++++++ 60
+++++++++++ 70
+++++++++++ 80
+++++++++++ 90
+++++++++++ 100
+++++++++++ 110
+++++++++++ 120
+++++++++++ 130
+++++++++++ 140
+++++++++++ 150
+++++++++++ 160
+++++++++++ 170
+++++++++++ 180
+++++       184
+>          first byte set
+
+
+++++++++++ 10
+++++++++++ 20
+++++++++++ 30
++++++++++  39
+>          second byte set
+>          third byte set
+>          forth byte set
+>          sixth byte set
+
+++++++++++ 10
++++++      15
+>          seventh byte set
+
++++++      5
+>          eighth byte set
+
+++++++++++ 10
+++++++++++ 20
+++++++++++ 30
+++++++++++ 40
+++++++++++ 50
+++++++++++ 60
+++++++++++ 70
+++++++++++ 80
+++++++++++ 90
+++++++++++ 100
+++++++++++ 110
+++++++++++ 120
+++++++++++ 130
+++++++++++ 140
+++++++++++ 150
+++++++++++ 160
+++++++++++ 170
+++++++++++ 180
+++++++++++ 190
++++++      195
+
+<<<<<<<    go back to the
+           first byte
+
+;;;;;;;;   runs eight bytes as
+           shellcode
+```
+
+### Notes
+
+* This shellcode will call `getpid()` and then return safely.
+* Because the syscall has no output, you'll only see effects with strace or a debugger.
+
+>[!NOTE]
+> `getpid.b` can be found in the tests/ folder
+
 ## TODO
 
 - [ ] LLVM IR emitter & LLVM backend
 - [ ] Multi-file compilation support
-- [ ] Smart syscall optimizer
-- [ ] Detection of weird misuse of shellcode mode
