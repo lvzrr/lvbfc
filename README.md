@@ -217,5 +217,4 @@ return 0;
 
 ## TODO
 
-- [ ] LLVM IR emitter & LLVM backend
 - [ ] Multi-file compilation support
