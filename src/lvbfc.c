@@ -100,10 +100,7 @@ int main(int argc, char **argv)
 	  	else if (strcmp(argv[i], "--opts") == 0) 
 			heap = true;
 	  	else if (strcmp(argv[i], "--x") == 0) 
-		{
-			heap = true;
 			x = true;
-	  	}
 		else if (strncmp(argv[i], "--stacksize=", 12) == 0)
 		{
 			stsize = lv_atoul(*(argv + i) + 12);
