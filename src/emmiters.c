@@ -125,7 +125,7 @@ void emit(t_vec *v, bool w, size_t s)
 }
 
 
-void	emit_heap(t_vec *v)
+void	emit_heap(t_vec *v, size_t op)
 {
 #ifdef __WIN32
 	FILE *f = fopen("C:"SEP"tmp"SEP"bf.c", "w");
@@ -163,7 +163,7 @@ void	emit_heap(t_vec *v)
 		"__builtin_memset(buf, 0, 65536);"
 		"uint8_t *safeg = buf;");
 	size_t i = 0;
-	optimize(v);
+	optimize(v, op);
 	while (i < v->size)
 	{
 		t_tokenseq x = *((t_tokenseq *)lv_vec_get_mut(v, i));

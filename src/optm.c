@@ -153,9 +153,9 @@ void	compact_vector(t_vec *v)
 	v->size = j;
 }
 
-void	optimize(t_vec *v)
+void	optimize(t_vec *v, size_t level)
 {
-	for (size_t pass = 0; pass < 2; pass++)
+	for (size_t pass = 0; pass < level; pass++)
 	{
 		for (size_t i = 0; i < v->size; i++)
 		{

@@ -36,6 +36,6 @@ typedef	struct tokenseq
 }	t_tokenseq;
 
 void	emit(t_vec *v, bool w, size_t stsize);
-void	emit_heap(t_vec *v);
-void	optimize(t_vec *v);
+void	emit_heap(t_vec *v, size_t l);
+void	optimize(t_vec *v, size_t l);
 #endif

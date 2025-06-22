@@ -43,6 +43,10 @@ Options:
   --stacksize=N     Set initial memory size in bytes
                     Default: 65536 (64 KiB)
 
+  --opt-level=N     Set optimization level (0-LONG_MAX)
+                    Default: 3 (maximum optimizations)
+                    Note: bigger != better    
+
   --dmp-tok         Print parsed token stream
                     Useful for debugging and optimization testing
 

@@ -26,6 +26,10 @@ static inline	void phelp(void)
 		"  --stacksize=N     Set initial memory size in bytes\n"
 		"                    Default: 65536 (64 KiB)\n"
 		"\n"
+		"  --opt-level=N     Set optimization level (0-LONG_MAX)\n"
+		"                    Default: 3 (maximum optimizations)\n"
+		"                    Note: bigger != better    \n"
+		"\n"
 		"  --dmp-tok         Print parsed token stream\n"
 		"                    Useful for debugging and optimization testing\n"
 		"\n"
@@ -246,6 +250,7 @@ int main(int argc, char **argv)
 	bool	wrap = true;
 	bool	heap = false;
 	size_t	stsize = 65536;
+	size_t	optl = 3;
 
 	if (argc < 2)
 	{
@@ -265,6 +270,15 @@ int main(int argc, char **argv)
 		else if (strncmp(argv[i], "--stacksize=", 12) == 0)
 		{
 			stsize = lv_atoul(*(argv + i) + 12);
+			if (!stsize)
+			{
+				fprintf(stderr, "Invalid stacksize\n");
+				return (EXIT_FAILURE);
+			}
+		}
+		else if (strncmp(argv[i], "--opt-level=", 12) == 0)
+		{
+			optl = lv_atoul(*(argv + i) + 12);
 			if (!stsize)
 			{
 				fprintf(stderr, "Invalid stacksize\n");
@@ -298,7 +312,7 @@ int main(int argc, char **argv)
 	t_vec o = lex(src, strict, shstrm);
 	if (shstrm)
 	{
-		optimize(&o);
+		optimize(&o, optl);
 		printf("==OPT==\n");
 		for (size_t i = 0; i < o.size; i++) {
 			const t_tokenseq *t = lv_vec_get(&o, i);
@@ -310,7 +324,7 @@ int main(int argc, char **argv)
 	}
 	printf("[lvbfc] compiling\n");
 	if (heap)
-		emit_heap(&o);
+		emit_heap(&o, optl);
 	else
 		emit(&o, wrap, stsize);
 	compile_c(outname);
