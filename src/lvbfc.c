@@ -27,7 +27,7 @@ static inline	void phelp(void)
 		"                    Default: 65536 (64 KiB)\n"
 		"\n"
 		"  --opt-level=N     Set optimization level (0-LONG_MAX)\n"
-		"                    Default: 3 (maximum optimizations)\n"
+		"                    Default: 3 \n"
 		"                    Note: bigger != better    \n"
 		"\n"
 		"  --dmp-tok         Print parsed token stream\n"

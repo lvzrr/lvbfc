@@ -44,7 +44,7 @@ Options:
                     Default: 65536 (64 KiB)
 
   --opt-level=N     Set optimization level (0-LONG_MAX)
-                    Default: 3 (maximum optimizations)
+                    Default: 3
                     Note: bigger != better    
 
   --dmp-tok         Print parsed token stream
