@@ -180,22 +180,31 @@ void	optimize(t_vec *v, size_t level)
 {
 	for (size_t pass = 0; pass < level; pass++)
 	{
+		size_t b4 = v->size;
+		size_t total_len = 0;
+
 		for (size_t i = 0; i < v->size; i++)
 		{
 			const t_tokenseq *x = lv_vec_get(v, i);
-			if (!x) break; // only returns null on oob, so don't deref
+			if (!x) break;
 			if (x->op == 0 || x->len == 0) continue;
+
+			total_len += x->len;
+
 			switch (x->op)
 			{
-				case '[':
-					opt_openl(v, i);
-				break;
-				case 'Z':
-					optz(v, i);
-				break;
-	   			default:break;
+				case '[': opt_openl(v, i); break;
+				case 'Z': optz(v, i); break;
+				default:  break;
 			}
 		}
 		compact_vector(v);
+		fprintf(stderr,
+			"\033[1;32mOptimized %lu ops\n"
+			"Collapsed from %lu total-length ops to %lu operations\033[0m\n",
+			b4 - v->size,
+			total_len,
+			v->size
+		);
 	}
 }

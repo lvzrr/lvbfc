@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 	bool	wrap = true;
 	bool	heap = false;
 	size_t	stsize = 65536;
-	size_t	optl = 3;
+	size_t	optl = 1;
 	bool	x = false;
 
 	if (argc < 2)
@@ -111,7 +111,10 @@ int main(int argc, char **argv)
 			}
 		}
 		else if (strncmp(argv[i], "--opt-level=", 12) == 0)
+		{
 			optl = lv_atoul(*(argv + i) + 12);
+			optl = (optl > 0) ? 1 : 0;
+		}
 		else if (strcmp(argv[i], "--help") == 0) 
 		{
 			phelp();
