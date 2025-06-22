@@ -80,6 +80,7 @@ Compiler                              | Elapsed | Instructions   | Cycles       
 lvbfc (--no-wrap --opt-level=5)      | 0.685 s | 4.32B          | 2.62B         | 1.65 | 4.24 %
 lvbfc (--opts --opt-level=5)         | 1.227 s | 11.61B         | 4.72B         | 2.46 | 2.09 %
 [bfjitc](https://github.com/tsoding/bfjit) | 1.586 s | 5.54B          | 3.59B         | 1.54 | 4.00 %
+btc                                  | 0.730 s | 5.97B          | 3.27B         | 1.83 | 4.15 %
 
 ## Tests
 
