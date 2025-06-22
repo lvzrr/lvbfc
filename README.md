@@ -176,6 +176,37 @@ Decimal: 184, 39, 0, 0, 0, 15, 5, 195
            shellcode
 ```
 
+This literally transpiles to:
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include <stdint.h>
+#include <sys/mman.h>
+#include <stdlib.h>
+
+int main(void) {uint8_t arr[65536] = {0};
+uint8_t *buf = &(arr[0]);
+void *execbuf = mmap(NULL, 512, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+*buf += 184;
+buf += 1;
+*buf += 39;
+buf += 4;
+*buf += 15;
+buf += 1;
+*buf += 5;
+buf += 1;
+*buf += 195;
+buf -= 7;
+if (execbuf == MAP_FAILED) { perror("mmap failed"); exit(EXIT_FAILURE); }
+__builtin_memcpy(execbuf, buf, 8);
+((void(*)(uint8_t *))execbuf)(buf);
+__builtin_memset(execbuf, 0, 512);
+munmap(execbuf, 512);
+return 0;
+}
+```
+
 ### Notes
 
 * This shellcode will call `getpid()` and then return safely.
