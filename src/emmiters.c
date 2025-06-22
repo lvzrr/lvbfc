@@ -166,61 +166,36 @@ void	emit_heap(t_vec *v)
 	while (i < v->size)
 	{
 		t_tokenseq x = *((t_tokenseq *)lv_vec_get_mut(v, i));
-		if (match_expr(v, i, "[-]")) {
-			const t_tokenseq *c = lv_vec_get(v, i + 1);
-			fprintf(f,
-				"/* [-] */__builtin_memset(buf, 0, %lu);",
-				c->len);
-				i += 3;
-			continue;
-		}
-		if (match_expr(v, i, "->+<")) {
-
-			const t_tokenseq *a = lv_vec_get(v, i + 1);
-			const t_tokenseq *c = lv_vec_get(v, i + 2);
-			const t_tokenseq *d = lv_vec_get(v, i + 3);
-			if (a->len == c->len && c->len == d->len)
-			{
-				size_t offset = d->len;
-				size_t scale = c->len;
-				fprintf(f,
-					"/* ->+< */ GROW_BUF(%lu); "
-					"*(buf + %lu) += *buf * %lu; "
-					"*buf = 0;",
-					offset, offset, scale);
-				i += 4;
-			continue;
-			}
-		}
-		if (match_expr(v, i, "Z+"))
-		{
-			const t_tokenseq *x = lv_vec_get(v, i + 1);
-			fprintf(f, " /* Z+ */ *buf = %lu;", x->len);
-			i += 2;
-			continue;
-		}
-		if (match_expr(v, i, "Z-"))
-		{
-			const t_tokenseq *x = lv_vec_get(v, i + 1);
-			fprintf(f, " /* Z- */ *buf = *buf - %lu;", 256 - x->len);
-			i += 2;
-			continue;
-		}
 		switch (x.op)
 		{
-			case '>': fprintf(f, "GROW_BUF(%lu);buf += %lu;", x.len, x.len); break;
+			case '>':
+				fprintf(f, "GROW_BUF(%lu); buf += %lu;", x.len, x.len);
+				break;
+
 			case '<':
-			fprintf(f,
-				"if ((size_t)(buf - safeg) < %lu) { fprintf(stderr, \"underflow at runtime\\n\"); free(safeg);exit(1); } buf -= %lu;",
-				x.len, x.len);
-			break;
-			case '+': fprintf(f, "*buf += %lu;", x.len); break;
-			case '-': fprintf(f, "*buf -= %lu;", x.len); break;
-			case '.': fprintf(f, "fputc(*buf, stdout);"); break;
-			case ',': 
+				fprintf(f,
+					"buf = (buf - safeg < %lu) ? safeg + size - %lu : buf - %lu;",
+					x.len, x.len, x.len);
+				break;
+
+			case '+':
+				fprintf(f, "*buf += %lu;", x.len);
+				break;
+
+			case '-':
+				fprintf(f, "*buf -= %lu;", x.len);
+				break;
+
+			case '.':
+				for (size_t j = 0; j < x.len; j++)
+					fprintf(f, "fputc(*buf, stdout);");
+				break;
+
+			case ',':
 				for (size_t j = 0; j < x.len; j++)
 					fprintf(f, "*buf = getchar();");
 				break;
+
 			case '[':
 				for (size_t j = 0; j < x.len; j++)
 					fprintf(f, "while (*buf) {");
@@ -230,10 +205,33 @@ void	emit_heap(t_vec *v)
 				for (size_t j = 0; j < x.len; j++)
 					fprintf(f, "}");
 				break;
+
 			case 'Z':
-					fprintf(f, "/* Z */ __builtin_memset(buf, 0, %lu);", x.len);
+				fprintf(f, "__builtin_memset(buf, 0, %lu);", x.len);
 				break;
-			default: break;
+
+			case 'E':
+				fprintf(f, "*buf = %lu;", x.len);  // from zero, so this adds +len
+				break;
+
+			case 'S':
+				fprintf(f, "*buf = -%lu;", x.len);  // same, but negative
+				break;
+
+			case 'M':
+				fprintf(f,
+					"for (size_t j = 0; j < %lu; j++) buf[j + 1] += buf[0]; buf[0] = 0;",
+					x.len);
+				break;
+
+			case 'C':
+				fprintf(f,
+					"for (size_t j = 0; j < %lu; j++) buf[j + 1] += buf[0]; buf[0] = 0;",
+					x.len);
+				break;
+
+			default:
+				break;
 		}
 		i++;
 	}

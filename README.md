@@ -1,11 +1,11 @@
-# lvbfc (lv's Brain Fuck Compiler)
+# lvbfc (lv's Brainfuck compiler)
 
-Brainfuck-to-C optimizing compiler written in C, using the [llv](https://github.com/lvzrr/llv) library.
+Brainfuck to C transpiler + compiler written in C, using the [llv](https://github.com/lvzrr/llv) library.
 
 ## Features
 
 - Converts Brainfuck code into """optimized""" C
-- Optional optimizations for patterns like [-], ->+<, etc.
+- Optional optimizations for patterns like [-], and other idioms.
 - Strict mode for loop sanity checks (honestly is too much but whatever)
 - Operation cancellation/balancing
 - Code sanitization, dead code removal
@@ -37,7 +37,7 @@ Options:
   --no-wrap         Disable cell wraparound (executes faster)
                     Allows 8-bit overflow behavior to be undefined
 
-  --use-heap        Use heap allocation for memory (dynamic growth)
+  --opts            Use heap allocation for memory (dynamic growth)
                     Enables GROW_BUF and dynamic pointer range
 
   --stacksize=N     Set initial memory size in bytes
@@ -55,13 +55,13 @@ Output:
 
 Examples:
   ./lvbfc hello.b hello         # Compile hello.b to ./hello
-  ./lvbfc code.b --use-heap     # Use heap-allocated memory
+  ./lvbfc code.b --opts         # Use heap-allocated memory
   ./lvbfc file.b --stacksize=0  # Will error out (invalid stacksize)
 
 Suggestions:
-  - Fastest:   --no-wrap        (you control stacksize manually)
-  - Safer:     --use-heap       (grows memory on demand)
-  - Slowest:   Default wrapping (safe but performs worst)
+  - Fastest + Safer:     --opts           (grows memory on demand + wraps in underflows)
+  - Mid:                 --no-wrap        (you control stacksize manually)
+  - Slowest:                              Default wrapping (safe but performs worst)
 ```
 
 ## Requirements
@@ -70,13 +70,14 @@ Suggestions:
 - make
 
 ## Mandelbrot Benchmark
-| Compiler             | Time Elapsed | Instructions     | Cycles         | IPC  | Branch Misses |
-|----------------------|--------------|------------------|----------------|------|----------------|
-| lvbfc (--no-wrap)    | 0.623 s      | 4.31 billion     | 2.63 billion   | 1.64 | 4.34%          |
-| lvbfc (--use-heap)   | 0.985 s      | 4.31 billion     | 2.63 billion   | 1.64 | 4.36%          |
-| [bfjitc](https://github.com/tsoding/bfjit)               | 1.586 s      | 5.54 billion     | 3.59 billion   | 1.54 | 4.00%          |
-| lvbfc (--no-wrap 30k)| 1.631 s      | 11.50 billion    | 4.18 billion   | 2.75 | 1.45%          |
-| lvbfc (default wrap) | 3.014 s      | 14.08 billion    | 10.87 billion  | 1.29 | 2.83%          |
+
+Compiler             | Time Elapsed | Instructions     | Cycles         | IPC  | Branch Misses
+---------------------|--------------|------------------|----------------|------|----------------
+lvbfc (--opts)       | 0.640 s      | 4.31 billion     | 2.64 billion   | 1.63 | 4.38%
+lvbfc (--no-wrap)    | 1.112 s      | 11.74 billion    | 4.68 billion   | 2.51 | 2.03%
+bfjitc               | 1.586 s      | 5.54 billion     | 3.59 billion   | 1.54 | 4.00%
+lvbfc (--no-wrap 30k)| 1.631 s      | 11.50 billion    | 4.18 billion   | 2.75 | 1.45%
+lvbfc (default wrap) | 3.014 s      | 14.08 billion    | 10.87 billion  | 1.29 | 2.83%
 
 
 ## Tests

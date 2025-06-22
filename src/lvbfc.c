@@ -20,7 +20,7 @@ static inline	void phelp(void)
 		"  --no-wrap         Disable cell wraparound (executes faster)\n"
 		"                    Allows 8-bit overflow behavior to be undefined\n"
 		"\n"
-		"  --use-heap        Use heap allocation for memory (dynamic growth)\n"
+		"  --opts            Use heap allocation for memory (dynamic growth)\n"
 		"                    Enables GROW_BUF and dynamic pointer range\n"
 		"\n"
 		"  --stacksize=N     Set initial memory size in bytes\n"
@@ -38,13 +38,13 @@ static inline	void phelp(void)
 		"\n"
 		"Examples:\n"
 		"  ./lvbfc hello.b hello         # Compile hello.b to ./hello\n"
-		"  ./lvbfc code.b --use-heap     # Use heap-allocated memory\n"
+		"  ./lvbfc code.b --opts         # Use heap-allocated memory\n"
 		"  ./lvbfc file.b --stacksize=0  # Will error out (invalid stacksize)\n"
 		"\n"
 		"Suggestions:\n"
-		"  - Fastest:   --no-wrap        (you control stacksize manually)\n"
-		"  - Safer:     --use-heap       (grows memory on demand)\n"
-		"  - Slowest:   Default wrapping (safe but performs worst)\n"
+		"  - Fastest + Safer:     --opts           (grows memory on demand + wraps in underflows)\n"
+		"  - Mid:                 --no-wrap        (you control stacksize manually)\n"
+		"  - Slowest:                              Default wrapping (safe but performs worst)\n"
 		"\n"
 	);
 }
@@ -260,7 +260,7 @@ int main(int argc, char **argv)
 			shstrm = true;
 	  	else if (strcmp(argv[i], "--no-wrap") == 0) 
 			heap = true;
-	  	else if (strcmp(argv[i], "--use-heap") == 0) 
+	  	else if (strcmp(argv[i], "--opts") == 0) 
 			wrap = false;
 		else if (strncmp(argv[i], "--stacksize=", 12) == 0)
 		{
@@ -298,6 +298,13 @@ int main(int argc, char **argv)
 	t_vec o = lex(src, strict, shstrm);
 	if (shstrm)
 	{
+		optimize(&o);
+		printf("==OPT==\n");
+		for (size_t i = 0; i < o.size; i++) {
+			const t_tokenseq *t = lv_vec_get(&o, i);
+			if (t)
+				printf("op: %c, len: %zu\n", t->op, t->len);
+		}
 		lv_vec_free(&o);
 		return (0);
 	}
