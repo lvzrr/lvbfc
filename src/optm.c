@@ -168,8 +168,13 @@ void	optimize(t_vec *v, size_t level)
 			const t_tokenseq *x = lv_vec_get(v, i);
 			if (!x) break; // only returns null on oob, so don't deref
 			if (x->op == 0 || x->len == 0) continue;
-			if (x->op == '[')
-				opt_openl(v, i);
+			switch (x->op)
+			{
+				case '[':
+					opt_openl(v, i);
+				break;
+	   			default:break;
+			}
 		}
 		compact_vector(v);
 	}

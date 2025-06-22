@@ -40,10 +40,19 @@ void emit(t_vec *v, bool w, size_t s, size_t l)
 				else
 					fprintf(f, "buf -= %lu;", x.len);
 				break;
-			case '+': fprintf(f, "*buf += %lu;", x.len); break;
-			case '-': fprintf(f, "*buf -= %lu;", x.len); break;
-			case '.': fprintf(f, "fputc(*buf, stdout);"); break;
-			case ',': 
+			case '+':
+				fprintf(f, "*buf += %lu;", x.len);
+				break;
+
+			case '-':
+				fprintf(f, "*buf -= %lu;", x.len);
+				break;
+
+			case '.':
+				for (size_t j = 0; j < x.len; j++)
+					fprintf(f, "fputc(*buf, stdout);");
+				break;
+			case ',':
 				for (size_t j = 0; j < x.len; j++)
 					fprintf(f, "*buf = getchar();");
 				break;
@@ -56,7 +65,7 @@ void emit(t_vec *v, bool w, size_t s, size_t l)
 					fprintf(f, "}");
 				break;
 			case 'Z':
-				fprintf(f, "*buf &= 0;");
+				fprintf(f, "*buf = 0;");
 			break;
 			case 'M':
 				fprintf(f,
@@ -150,7 +159,6 @@ void	emit_heap(t_vec *v, size_t op)
 				for (size_t j = 0; j < x.len; j++)
 					fprintf(f, "fputc(*buf, stdout);");
 				break;
-
 			case ',':
 				for (size_t j = 0; j < x.len; j++)
 					fprintf(f, "*buf = getchar();");
@@ -167,7 +175,7 @@ void	emit_heap(t_vec *v, size_t op)
 				break;
 
 			case 'Z':
-				fprintf(f, "*buf &= 0;");
+				fprintf(f, "*buf = 0;");
 			break;
 			case 'M':
 				fprintf(f,
