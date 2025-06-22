@@ -1,6 +1,6 @@
 #include "lvbfc.h"
 
-void emit(t_vec *v, bool w, size_t s, size_t l)
+void emit(t_vec *v, bool w, size_t s, size_t l, bool x)
 {
 #ifdef __WIN32
 	FILE *f = fopen("C:"SEP"tmp"SEP"bf.c", "w");
@@ -21,8 +21,9 @@ void emit(t_vec *v, bool w, size_t s, size_t l)
 		"#include <stdlib.h>\n\n"
 		"int main(void) {"
 		"uint8_t arr[%lu] = {0};\n"
-		 "void *execbuf = mmap(NULL, 512, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);\n"
 		"uint8_t *buf = &(arr[0]);\n", s);
+	if (x)
+		fprintf(f,"void *execbuf = mmap(NULL, 512, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);\n");
 	size_t i = 0;
 	optimize(v, l);
 	while (i < v->size)
@@ -99,8 +100,9 @@ void emit(t_vec *v, bool w, size_t s, size_t l)
 		}
 		i++;
 	}
+	if (x)
+		fprintf(f,"munmap(execbuf, 512);\n");
 	fprintf(f,
-		"munmap(execbuf, 512);\n"
 		"return 0;\n"
 		"}\n");
 
@@ -109,7 +111,7 @@ void emit(t_vec *v, bool w, size_t s, size_t l)
 }
 
 
-void	emit_heap(t_vec *v, size_t op)
+void	emit_heap(t_vec *v, size_t op, bool x)
 {
 #ifdef __WIN32
 	FILE *f = fopen("C:"SEP"tmp"SEP"bf.c", "w");
@@ -146,8 +148,10 @@ void	emit_heap(t_vec *v, size_t op)
 		"if (!buf) { perror(\"unable to allocate space\"); return EXIT_FAILURE; }"
 		"size_t size = 65536;\n"
 		"__builtin_memset(buf, 0, 65536);\n"
-		 "void *execbuf = mmap(NULL, 512, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);\n"
 		"uint8_t *safeg = buf;\n");
+
+	if (x)
+		fprintf(f,"void *execbuf = mmap(NULL, 512, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);\n");
 	size_t i = 0;
 	optimize(v, op);
 	while (i < v->size)
@@ -227,9 +231,10 @@ void	emit_heap(t_vec *v, size_t op)
 		i++;
 	}
 
+	if (x)
+		fprintf(f,"munmap(execbuf, 512);\n");
 	fprintf(f,
 		"free(safeg);\n"
-		"munmap(execbuf, 512);\n"
 		"return 0;\n"
 		"}");
 

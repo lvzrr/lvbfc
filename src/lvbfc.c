@@ -151,9 +151,9 @@ int main(int argc, char **argv)
 	}
 	printf("[lvbfc] compiling\n");
 	if (heap)
-		emit_heap(&o, optl);
+		emit_heap(&o, optl, x);
 	else
-		emit(&o, wrap, stsize, optl);
+		emit(&o, wrap, stsize, optl, x);
 	compile_c(outname);
 	printf("[lvbfc] compililed successfully!\n");
 	return (0);
