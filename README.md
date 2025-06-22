@@ -223,4 +223,4 @@ return 0;
 - [ ] Multi-file compilation support
 
 >[!WARNING]
-> --opt-level=1 can mess with really complex programs like utm.b or bitwidth.b, use --opt-level=0 for these, it still does heavy opts, but not as aggressively, every other program works just fine
+> --opt-level=1 can mess with really complex programs like utm.b or bitwidth.b, use --opt-level=0 for these, it still does heavy opts, but not as aggressively, every other program works just fine. (It'll fail with the cc/clang command, so you'll know)
