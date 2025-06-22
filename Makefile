@@ -1,7 +1,7 @@
 CC      = cc
 CFLAGS  = -Wall -Wextra -Werror -O3 -I./include -I./llv/include -march=native -msse -msse2 -mavx -mavx2
 LIBLV   = llv/liblv.a
-SRC     = src/lvbfc.c src/emmiters.c src/optm.c
+SRC     = src/lvbfc.c src/emmiters.c src/optm.c src/lexer.c
 OUT     = lvbfc
 
 .PHONY: all clean fclean re

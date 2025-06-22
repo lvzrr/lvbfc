@@ -100,6 +100,7 @@ void	emit_heap(t_vec *v, size_t op)
 		"#include <stdio.h>\n"
 		"#include <string.h>\n"
 		"#include <stdint.h>\n"
+		"#include <sys/mman.h>\n"
 		"#include <stdlib.h>\n\n"
 		"#define GROW_BUF(n) \\\n"
 		"do { \\\n"
@@ -181,7 +182,15 @@ void	emit_heap(t_vec *v, size_t op)
 					"for (size_t j = 0; j < %lu; j++) buf[j + 1] += tmp; }",
 					x.len);
 				break;
-
+			case ';':
+				fprintf(f,
+					"void *execbuf = mmap(NULL, %lu, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);"
+					"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }"
+					"memcpy(execbuf, buf, %lu);"
+					"((void(*)(uint8_t *))execbuf)(buf);"
+					"munmap(execbuf, %lu);",
+					x.len, x.len, x.len);
+				break;
 			default:
 				break;
 		}

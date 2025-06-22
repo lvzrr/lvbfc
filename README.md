@@ -11,10 +11,14 @@ Brainfuck to C transpiler + compiler written in C, using the llv library.
 - Code sanitization, dead‑code + infinite‑loop removal
 - Outputs native binaries
 - Wrapping buffer mode with no undefined behavior (optional)
+- Optional heap mode for dynamic memory
+- Optional syscall injection mode from the current cursor up to N (via Brainfuck `;` count)
 
 ## Build
 
+```sh
 make
+```
 
 ## Usage
 ```
@@ -35,6 +39,9 @@ Options:
 
   --opts            Use heap allocation for dynamic memory growth
 
+  --x               Enable syscall shellcode emit mode (experimental)
+                    Use `;` x N to mark syscall byte count
+
   --stacksize=N     Initial memory size in bytes (default: 65536)
 
   --opt-level=N     Optimization passes (default: 3)
@@ -51,13 +58,16 @@ Output:
 Examples:
   ./lvbfc hello.b hello         # compile to ./hello
   ./lvbfc code.b --opts         # safer & dynamic memory growth
+  ./lvbfc syscall.b --x         # run syscall via shellcode
   ./lvbfc file.b --stacksize=0  # invalid → error
 
 Suggestions:
   - Fastest:             --no-wrap --opt-level=5
   - Mid‑range:           --opts --opt-level=5 (heap)
+  - Shellcode mode:      --x with `;;;;;;` to exec 6‑byte syscall (the same as --opts)
   - Safe default:        no flags
 ```
+
 ## Requirements
 
 - C compiler: GCC or Clang
@@ -65,11 +75,11 @@ Suggestions:
 
 ## Mandelbrot Benchmark
 
-Compiler                         | Elapsed | Instructions   | Cycles        | IPC  | Branch Misses
----------------------------------|---------|----------------|---------------|------|----------------
-lvbfc (--no-wrap --opt-level=5)     | 0.685 s | 4.32B          | 2.62B         | 1.65 | 4.24 %
-lvbfc (--opts --opt-level=5)  | 1.227 s | 11.61B         | 4.72B         | 2.46 | 2.09 %
-[bfjitc](https://github.com/tsoding/bfjit)                           | 1.586 s | 5.54B          | 3.59B         | 1.54 | 4.00 %
+Compiler                              | Elapsed | Instructions   | Cycles        | IPC  | Branch Misses
+-------------------------------------|---------|----------------|---------------|------|----------------
+lvbfc (--no-wrap --opt-level=5)      | 0.685 s | 4.32B          | 2.62B         | 1.65 | 4.24 %
+lvbfc (--opts --opt-level=5)         | 1.227 s | 11.61B         | 4.72B         | 2.46 | 2.09 %
+[bfjitc](https://github.com/tsoding/bfjit) | 1.586 s | 5.54B          | 3.59B         | 1.54 | 4.00 %
 
 ## Tests
 
@@ -79,3 +89,5 @@ Compliant with https://brainfuck.org/tests.b (included under tests/compliance) a
 
 - [ ] LLVM IR emitter & LLVM backend
 - [ ] Multi-file compilation support
+- [ ] Smart syscall optimizer
+- [ ] Detection of weird misuse of shellcode mode
