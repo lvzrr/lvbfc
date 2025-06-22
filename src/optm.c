@@ -23,25 +23,8 @@ void	opt_openl(t_vec *v, size_t i)
 		remove_t(a);
 		*a = (t_tokenseq){ .op = 'Z', .len = 1 };
 	}
-	// else if (a->op == '[' && b->op == '-' && c->op == ']' &&
-	// 	b->len == 1)
-	// {
-	// 	remove_t(b);
-	// 	a->len--;
-	// 	c->len--;
-	// 	if(!a->len)
-	// 	{
-	// 		remove_t(a);
-	// 		*a = (t_tokenseq){ .op = 'Z', .len = 1 };
-	// 	}
-	// 	else
-	// 		*(a + 1) = (t_tokenseq){ .op = 'Z', .len = 1 };
-	// 	if(!c->len)
-	// 		remove_t(c);
-	// }
 
-
-	/* [->+<] -> 'M' */
+	// /* [->+<] -> 'M' */
 	if (i + 5 >= v->size) return;
 	t_tokenseq *lop	= lv_vec_get_mut(v, i);
 	t_tokenseq *min	= lv_vec_get_mut(v, i + 1);
@@ -63,7 +46,6 @@ void	opt_openl(t_vec *v, size_t i)
 		remove_t(mr);
 		remove_t(add);
 		remove_t(ml);
-		remove_t(lc);
 		lop->len--;
 		if (!lop->len) remove_t(lop);
 		lc->len--;
@@ -165,7 +147,7 @@ void	optimize(t_vec *v, size_t level)
 			switch (x->op)
 			{
 				case '[': opt_openl(v, i); break;
-				case 'Z': opt_z(v, i); break;
+				// case 'Z': opt_z(v, i); break;
 				default: break;
 			}
 		}

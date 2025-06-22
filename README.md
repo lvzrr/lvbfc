@@ -1,24 +1,22 @@
 # lvbfc (lv's Brainfuck compiler)
 
-Brainfuck to C transpiler + compiler written in C, using the [llv](https://github.com/lvzrr/llv) library.
+Brainfuck to C transpiler + compiler written in C, using the llv library.
 
 ## Features
 
-- Converts Brainfuck code into """optimized""" C
-- Optional optimizations for patterns like [-], and other idioms.
-- Strict mode for loop sanity checks (honestly is too much but whatever)
+- Converts Brainfuck code into optimized C
+- Pattern optimizations (e.g., [-], M, C)
+- Strict mode for loop sanity checks
 - Operation cancellation/balancing
-- Code sanitization, dead code removal
-- Infinite loop removal '[]'
-- Output compiles to a native binary
-- Wrapping buffer, no memory unbound actions (optional)
+- Code sanitization, dead‑code + infinite‑loop removal
+- Outputs native binaries
+- Wrapping buffer mode with no undefined behavior (optional)
 
 ## Build
 
 make
 
 ## Usage
-
 ```
 lvbfc - Brainfuck compiler
 ---------------------------------------------------
@@ -31,89 +29,53 @@ Arguments:
                     Default: bfout
 
 Options:
-  --no-strict       Disable safety checks for loops
-                    Ignores checks for potentially infinite loops
+  --no-strict       Disable safety checks for loops @ comptime
 
-  --no-wrap         Disable cell wraparound (executes faster)
-                    Allows 8-bit overflow behavior to be undefined
+  --no-wrap         Disable buffer wraparound (executes faster)
 
-  --opts            Use heap allocation for memory (dynamic growth)
-                    Enables GROW_BUF and dynamic pointer range
+  --opts            Use heap allocation for dynamic memory growth
 
-  --stacksize=N     Set initial memory size in bytes
-                    Default: 65536 (64 KiB)
+  --stacksize=N     Initial memory size in bytes (default: 65536)
 
-  --opt-level=N     Set optimization level (0-LONG_MAX)
-                    Default: 3
-                    Note: bigger != better    
+  --opt-level=N     Optimization passes (default: 3)
+                    More ≠ better (balance iteration vs comptime)
 
-  --dmp-tok         Print parsed token stream
-                    Useful for debugging and optimization testing
+  --dmp-tok         Print parsed token stream (debugging only)
 
   --help            Show this help message and exit
 
 Output:
-  Produces a compiled C file and builds it into a native binary.
-  Uses GCC or Clang automatically (fallback if one fails).
+  Produces a .c + native binary via GCC/Clang (fallback if needed).
   Output binary defaults to './bfout' unless specified.
 
 Examples:
-  ./lvbfc hello.b hello         # Compile hello.b to ./hello
-  ./lvbfc code.b --opts         # Use heap-allocated memory
-  ./lvbfc file.b --stacksize=0  # Will error out (invalid stacksize)
+  ./lvbfc hello.b hello         # compile to ./hello
+  ./lvbfc code.b --opts         # safer & dynamic memory growth
+  ./lvbfc file.b --stacksize=0  # invalid → error
 
 Suggestions:
-  - Fastest + Safer:     --opts           (grows memory on demand + wraps in underflows)
-  - Mid:                 --no-wrap        (you control stacksize manually)
-  - Slowest:                              Default wrapping (safe but performs worst)
+  - Fastest + Safer:     --no-wrap --opt-level=5
+  - Mid‑range:           --opts --opt-level=5 (heap)
+  - Safe default:        no flags
 ```
-
 ## Requirements
 
-- A C compiler (GCC or Clang)
+- C compiler: GCC or Clang
 - make
 
 ## Mandelbrot Benchmark
 
-Compiler             | Time Elapsed | Instructions     | Cycles         | IPC  | Branch Misses
----------------------|--------------|------------------|----------------|------|----------------
-lvbfc (--opts)       | 0.640 s      | 4.31 billion     | 2.64 billion   | 1.63 | 4.38%
-lvbfc (--no-wrap)    | 1.112 s      | 11.74 billion    | 4.68 billion   | 2.51 | 2.03%
-[bfjitc](https://github.com/tsoding/bfjit)               | 1.586 s      | 5.54 billion     | 3.59 billion   | 1.54 | 4.00%
-lvbfc (--no-wrap 30k)| 1.631 s      | 11.50 billion    | 4.18 billion   | 2.75 | 1.45%
-lvbfc (default wrap) | 3.014 s      | 14.08 billion    | 10.87 billion  | 1.29 | 2.83%
-
+Compiler                         | Elapsed | Instructions   | Cycles        | IPC  | Branch Misses
+---------------------------------|---------|----------------|---------------|------|----------------
+lvbfc (--no-wrap --opt-level=5)     | 0.685 s | 4.32B          | 2.62B         | 1.65 | 4.24 %
+lvbfc (--opts --opt-level=5)  | 1.227 s | 11.61B         | 4.72B         | 2.46 | 2.09 %
+[bfjitc](https://github.com/tsoding/bfjit)                           | 1.586 s | 5.54B          | 3.59B         | 1.54 | 4.00 %
 
 ## Tests
 
-Compliant with https://brainfuck.org/tests.b (included under tests/compliance)
+Compliant with https://brainfuck.org/tests.b (included under tests/compliance) and includes various example programs.
 
-Also includes some programs from here: https://brainfuck.org/ (they are really cool check them out)
+## TODO
 
-## Running programs
-
-As of right now, all of these are running smoothly (these are in tests/) + a couple more:
-
-```
-dbf2c.b
-e.b
-helloworld.b
-jabh.b
-life2.b
-mandelbrot.b
-numwrap.b
-pgq.b
-pwo2.b
-quine.b
-rbg.b
-stri.b
-truemorse.b
-ttt.b
-unmatched.b
-utm.b
-```
-
-## TODO:
-
-- [ ] add LLVM IR emitter + target
-- [ ] allow multi-file-compilation
+- [ ] LLVM IR emitter & LLVM backend
+- [ ] Multi-file compilation support

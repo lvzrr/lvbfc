@@ -1,19 +1,6 @@
 #include "lvbfc.h"
 
-bool	match_expr(t_vec *v, size_t start, const char *pattern)
-{
-	size_t len = strlen(pattern);
-	if (v->size < start + len) return false;
-
-	for (size_t i = 0; i < len; i++)
-	{
-		const t_tokenseq *ts = lv_vec_get(v, start + i);
-		if (!ts || ts->op != pattern[i]) return false;
-	}
-	return true;
-}
-
-void emit(t_vec *v, bool w, size_t s)
+void emit(t_vec *v, bool w, size_t s, size_t l)
 {
 #ifdef __WIN32
 	FILE *f = fopen("C:"SEP"tmp"SEP"bf.c", "w");
@@ -35,49 +22,10 @@ void emit(t_vec *v, bool w, size_t s)
 		"uint8_t arr[%lu] = {0};"
 		"uint8_t *buf = &(arr[0]);", s);
 	size_t i = 0;
+	optimize(v, l);
 	while (i < v->size)
 	{
 		t_tokenseq x = *((t_tokenseq *)lv_vec_get(v, i));
-		if (match_expr(v, i, "[-]")) {
-			const t_tokenseq *c = lv_vec_get(v, i + 1);
-			fprintf(f,
-				"/* [-] */__builtin_memset(buf, 0, %lu);",
-				c->len);
-				i += 3;
-			continue;
-		}
-		if (match_expr(v, i, "->+<")) {
-
-			const t_tokenseq *a = lv_vec_get(v, i + 1);
-			const t_tokenseq *c = lv_vec_get(v, i + 2);
-			const t_tokenseq *d = lv_vec_get(v, i + 3);
-			if (a->len == c->len && c->len == d->len)
-			{
-				size_t offset = d->len;
-				size_t scale = c->len;
-				fprintf(f,
-					"/* ->+< */"
-					"*(buf + %lu) += *buf * %lu; "
-					"*buf = 0;",
-					offset, scale);
-				i += 4;
-			continue;
-			}
-		}
-		if (match_expr(v, i, "Z+"))
-		{
-			const t_tokenseq *x = lv_vec_get(v, i + 1);
-			fprintf(f, " /* Z+ */ *buf = %lu;", x->len);
-			i += 2;
-			continue;
-		}
-		if (match_expr(v, i, "Z-"))
-		{
-			const t_tokenseq *x = lv_vec_get(v, i + 1);
-			fprintf(f, " /* Z- */ *buf = *buf - %lu;", 256 - x->len);
-			i += 2;
-			continue;
-		}
 		switch (x.op)
 		{
 			case '>':
@@ -86,7 +34,6 @@ void emit(t_vec *v, bool w, size_t s)
 				else
 					fprintf(f, "buf += %lu;", x.len);
 				break;
-
 			case '<':
 				if (w)
 					fprintf(f, "buf = arr + ((buf - arr + %lu - %lu) %% %lu);", s, x.len, s);
@@ -104,13 +51,30 @@ void emit(t_vec *v, bool w, size_t s)
 				for (size_t j = 0; j < x.len; j++)
 					fprintf(f, "while (*buf) {");
 				break;
-
 			case ']':
 				for (size_t j = 0; j < x.len; j++)
 					fprintf(f, "}");
 				break;
 			case 'Z':
-					fprintf(f, "__builtin_memset(buf, 0, %lu);", x.len);
+				fprintf(f, "__builtin_memset(buf, 0, %lu);", x.len);
+				break;
+			case 'E':
+				fprintf(f, "*buf = %lu;", x.len);
+				break;
+			case 'S':
+				fprintf(f, "*buf = -%lu;", x.len);
+				break;
+			case 'M':
+				fprintf(f,
+					"{ uint8_t tmp = buf[0]; buf[0] = 0;"
+					"for (size_t j = 0; j < %lu; j++) buf[j + 1] += tmp; }",
+					x.len);
+				break;
+			case 'C':
+				fprintf(f,
+					"{ uint8_t tmp = buf[0]; buf[0] = 0;"
+					"for (size_t j = 0; j < %lu; j++) buf[j + 1] += tmp; }",
+					x.len);
 				break;
 			default: break;
 		}
@@ -221,13 +185,15 @@ void	emit_heap(t_vec *v, size_t op)
 
 			case 'M':
 				fprintf(f,
-					"for (size_t j = 0; j < %lu; j++) buf[j + 1] += buf[0]; buf[0] = 0;",
+					"{ uint8_t tmp = buf[0]; buf[0] = 0;"
+					"for (size_t j = 0; j < %lu; j++) buf[j + 1] += tmp; }",
 					x.len);
 				break;
 
 			case 'C':
 				fprintf(f,
-					"for (size_t j = 0; j < %lu; j++) buf[j + 1] += buf[0]; buf[0] = 0;",
+					"{ uint8_t tmp = buf[0]; buf[0] = 0;"
+					"for (size_t j = 0; j < %lu; j++) buf[j + 1] += tmp; }",
 					x.len);
 				break;
 
