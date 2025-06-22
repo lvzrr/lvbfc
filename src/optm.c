@@ -143,6 +143,23 @@ void	opt_openl(t_vec *v, size_t i)
 		*(l + 1) = (t_tokenseq){ .op = 'C', .len = dests };
 }
 
+void	optz(t_vec *v, size_t i)
+{
+	if (i + 1 >= v->size) return;
+	t_tokenseq *a = lv_vec_get_mut(v, i);
+	t_tokenseq *b = lv_vec_get_mut(v, i + 1);
+	if (a->op == 'Z' && b->op == '+')
+	{
+		*a = (t_tokenseq) {.op = 'A', .len = b->len};
+		remove_t(b);
+	}
+	else if (a->op == 'Z' && b->op == '-')
+	{
+		*a = (t_tokenseq) {.op = 'S', .len = b->len};
+		remove_t(b);
+	}
+}
+
 void	compact_vector(t_vec *v)
 {
 	t_tokenseq *buf = (t_tokenseq *)v->data;
@@ -172,6 +189,9 @@ void	optimize(t_vec *v, size_t level)
 			{
 				case '[':
 					opt_openl(v, i);
+				break;
+				case 'Z':
+					optz(v, i);
 				break;
 	   			default:break;
 			}

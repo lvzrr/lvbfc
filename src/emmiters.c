@@ -64,6 +64,12 @@ void emit(t_vec *v, bool w, size_t s, size_t l)
 				for (size_t j = 0; j < x.len; j++)
 					fprintf(f, "}");
 				break;
+			case 'A':
+				fprintf(f, "*buf = %lu;", x.len);
+			break;
+			case 'S':
+				fprintf(f, "*buf = -((unsigned char)%lu);", x.len);
+			break;
 			case 'Z':
 				fprintf(f, "*buf = 0;");
 			break;
@@ -173,9 +179,14 @@ void	emit_heap(t_vec *v, size_t op)
 				for (size_t j = 0; j < x.len; j++)
 					fprintf(f, "}");
 				break;
-
 			case 'Z':
 				fprintf(f, "*buf = 0;");
+			break;
+			case 'A':
+				fprintf(f, "*buf = %lu;", x.len);
+			break;
+			case 'S':
+				fprintf(f, "*buf = -((unsigned char)%lu);", x.len);
 			break;
 			case 'M':
 				fprintf(f,
