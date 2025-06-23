@@ -4,53 +4,20 @@ Brainfuck to C transpiler + compiler written in C, using the llv library.
 
 ## Features
 
-- Brainfuck to optimized C transpilation
-  - Converts source into efficient, readable, and compilable C code
-  - Uses custom pattern-based optimization passes
-
-- Operation collapsing and cancellation
-  - Removes redundant operations (`++--`, `><<>>`) at compile time
-
-- Loop analysis and strict mode
-  - Detects invalid or infinite loops (`[+]`, `[[` without `-]`)
-  - Can be disabled with `--no-strict`
-
-- Dead code and infinite loop pruning
-  - Eliminates unreachable or semantically null code
-
-- Native binary output
-  - Generates both a `.c` file and a native executable via GCC or Clang
-
-- Wraparound control
-  - Optional circular buffer (enabled by default)
-  - Disabling with `--no-wrap` removes wrap semantics for raw speed
-
-- Heap mode (`--heap`)
-  - Dynamically allocated tape for programs that need large or growing memory
-
-- Shellcode mode (`--x`)
-  - Use `;` to inject and execute raw syscalls from memory
-  - Supports AVX/SSE copy paths for aligned blocks
-
-- Canary instrumentation (`--allow-canary`)
-  - `?` inserts debug markers into C output
-  - `??` dumps the buffer (from index 0 to current ptr) in hex format
-
-- Pointer abuse extensions (enabled with `--x`)
-  - `&`, `=`, and extended stack/pointer manipulation support
-  - Enables self-modifying logic and direct tape indirection
-
-- Debugging tools
-  - `--dmp-tok` to dump parsed token stream before compilation
-  - Full visibility into optimization pipeline
-
-- Portable C build
-  - No external dependencies beyond standard C and `llv` lib
-  - POSIX-compliant; works with both `gcc` and `clang`
-
-- Compliant and fast
-  - Passes full [brainfuck.org/tests.b](https://brainfuck.org/tests.b)
-  - Native output runs faster than most interpreters or naive JITs
+| Feature                   | Description |
+|---------------------------|-------------|
+| Optimized Transpilation   | Converts Brainfuck into efficient, readable C |
+| Operation Folding         | Collapses sequences like `++--`, `>><<` |
+| Strict Loop Analysis      | Detects unsafe loops, warns/fails on invalid constructs |
+| Dead Code Elimination     | Strips unused code and non-effect loops |
+| Native Binary Output      | Outputs `.c` + native ELF via `gcc` or `clang` |
+| Wraparound Control        | Circular buffer by default, can be disabled with `--no-wrap` |
+| Heap Mode (`--heap`)      | Dynamic memory allocation for tape |
+| Shellcode Mode (`--x`)    | Injects and runs syscalls via `;` sequences |
+| Canary Debugging          | `?` inserts C comments, `??` dumps memory |
+| Extended Pointer Ops      | `&`, `=` and similar are enabled in `--x` mode |
+| Debug Stream Dump         | `--dmp-tok` shows token stream before emit |
+| Clean C, Minimal Build    | Works with just `make`, `gcc` or `clang`, no dependencies |
 
 ## Build
 
