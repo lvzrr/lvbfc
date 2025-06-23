@@ -9,8 +9,8 @@ These operators are **only active when `--x` is enabled**. They will be ignored 
 | `;`      | Syscall Exec Marker   | Copies `N` bytes from the tape (starting at the current pointer) into an executable buffer and runs it. Supports AVX2/SSE if aligned, does no bounds checking. |
 | `?`      | Canary Marker         | Inserts a debug comment in the generated C code. |
 | `??`     | Buffer Dump           | Prints a hexadecimal dump of the memory from the start of the tape up to the current pointer. |
-| `&`      | Pointer Writer        | Writes the address of `buf + (N - 1)` into the tape, from the current cell (as a raw `uintptr_t`) to the current cell + N. Allows constructing absolute syscall arguments. Stackable: e.g. `&&&` writes address of `buf + 2` at `buf`, does no bounds checking. |
-| `=`      | Pointer Jump          | Interprets the current cell as a pointer (raw `uintptr_t`) and sets `buf` to that address. Enables pointer-based control flow and tape indirection, does no bounds checking. |
+| `&`      | Pointer Writer        | Writes the address of `buf + (N - 1)` into the tape, from the current cell (as a raw `uintptr_t`) to the current cell + N. Allows constructing absolute syscall arguments. Stackable: e.g. `&&&` writes address of `buf + 2` at `buf`, does bounds checking. |
+| `=`      | Pointer Jump          | Interprets the current cell as a pointer (raw `uintptr_t`) and sets `buf` to that address. Enables pointer-based control flow and tape indirection, does bounds checking. |
 
 
 ## The 'Canary' Feature
