@@ -20,7 +20,7 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool x)
 		"#include <sys/mman.h>\n"
 		"#include <stdlib.h>\n\n"
 		"int main(void) {"
-		"uint8_t arr[%lu] = {0};\n"
+		"__attribute__((aligned(256))) uint8_t arr[%lu] = {0};"
 		"uint8_t *buf = &(arr[0]);\n", s);
 	if (x)
 		fprintf(f,"void *execbuf = mmap(NULL, 512, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);\n");
@@ -272,7 +272,7 @@ void	emit_heap(t_vec *v, size_t op, bool x)
 				if (x.len % 32 == 0) {
 					fprintf(f,
 						"#include <immintrin.h>\n"
-						"if (execbuf == map_failed) { perror(\"mmap failed\"); exit(exit_failure); }\n"
+						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(exit_failure); }\n"
 						"{\n"
 						"    size_t chunks = %lu / 32;\n"
 						"    for (size_t i = 0; i < chunks; ++i) {\n"
@@ -287,7 +287,7 @@ void	emit_heap(t_vec *v, size_t op, bool x)
 				} else if (x.len % 16 == 0) {
 					fprintf(f,
 						"#include <emmintrin.h>\n"
-						"if (execbuf == map_failed) { perror(\"mmap failed\"); exit(exit_failure); }\n"
+						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(exit_failure); }\n"
 						"{\n"
 						"    size_t chunks = %lu / 16;\n"
 						"    for (size_t i = 0; i < chunks; ++i) {\n"
@@ -301,7 +301,7 @@ void	emit_heap(t_vec *v, size_t op, bool x)
 					);
 				} else {
 					fprintf(f,
-						"if (execbuf == map_failed) { perror(\"mmap failed\"); exit(exit_failure); }\n"
+						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(exit_failure); }\n"
 						"__builtin_memcpy(execbuf, buf, %lu);\n"
 						"((void(*)(void))execbuf)();\n"
 						"__builtin_memset(execbuf, 0, %lu);\n",
