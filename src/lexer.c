@@ -121,7 +121,7 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 		totalopts += x.len;
 		lv_vec_push(&out, &x, 1);
 	}
-	size_t plevel = 0;
+	ssize_t plevel = 0;
 	for (size_t i = 0; i < out.size; i++)
 	{
 		t_tokenseq *x2 = ((t_tokenseq *)lv_vec_get(&out, i));
@@ -179,7 +179,7 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 		if (dmp)
 			printf("op: %c  len: %lu plevel: %ld\n", x2->op, x2->len, plevel);
 	}
-	if (plevel != 0)
+	if (plevel <= 0)
 	{
 		free((char *)ogp);
 		THROW_ERR("unmatched loop guards", out);
