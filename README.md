@@ -100,6 +100,38 @@ The `canary` feature, enabled by the `--allow-canary` option, introduces special
     - Print a message to 'stderr' indicating the number of bytes being dumped.
     - Display the hexadecimal values of each byte in that memory segment, formatted for readability (40 bytes per line).
 
+```text
+$ cat helloworld.b
+
+++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++??.
+
+$ lvbfc helloworld.b --no-wrap --no-strict
+
+WARNING: potential dangerous loop (no '-' in loop) detected @ seq. 24
+[lvbfc] compiling
+Optimized 0 ops
+Collapsed from 106 total-length ops to 58 operations
+[lvbfc] compililed successfully!
+
+$ ./bfout
+
+Hello World!
+
+$ lvbfc helloworld.b --no-wrap --no-strict --allow-canary
+
+WARNING: potential dangerous loop (no '-' in loop) detected @ seq. 24
+[lvbfc] compiling
+Optimized 0 ops
+Collapsed from 108 total-length ops to 59 operations
+[lvbfc] compililed successfully!
+
+$ ./bfout
+
+[CANARY] Dumping 7 bytes:
+00 00 48 64 57 21 0A
+Hello World!
+```
+
 ##  Syscall Mode Example: `getpid`
 
 This example shows how to use the `--x` shellcode injection mode to perform a simple syscall. We inject raw x86-64 shellcode into executable memory and jump into it.
