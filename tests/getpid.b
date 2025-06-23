@@ -69,5 +69,8 @@ NOTE: run with allow canary to see the
 
 ??
 
-<<<<<<<
-;;;;;;;;
+<<<<<<<    go back to the
+           first byte of
+           the syscall
+
+;;;;;;;;   run a 8 byte syscall
