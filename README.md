@@ -42,8 +42,7 @@ Options:
   --x               Enable syscall shellcode emit mode (experimental)
                     Use `;` x N to mark syscall byte count
 
-  --allow-canary    Enable `?` instruction to emit /* CANARY */ comment
-                    Useful for instrumentation and debug boundaries
+  --allow-canary    Enable `?` and `??` instructions
 
   --stacksize=N     Initial memory size in bytes (default: 65536)
 
@@ -89,6 +88,17 @@ Python (brainfuck.py)                          | 1830.571 s | 25.19T         | 5
 ## Tests
 
 Compliant with https://brainfuck.org/tests.b (included under tests/compliance) and includes various example programs.
+
+## The 'Canary' Feature
+
+The `canary` feature, enabled by the `--allow-canary` option, introduces special debugging instructions into your Brainfuck code using the `?` character.
+
+- A single `?` in your Brainfuck code will simply insert a comment in the generated C output, marking a 'CANARY' point. It's a visual cue for where you've placed a check.
+
+- The `??` instruction, however, triggers a **memory buffer dump**. When encountered, the generated C code will:
+    - Calculate the current size of the active memory buffer segment (from the beginning of the buffer to the current position).
+    - Print a message to 'stderr' indicating the number of bytes being dumped.
+    - Display the hexadecimal values of each byte in that memory segment, formatted for readability (40 bytes per line).
 
 ##  Syscall Mode Example: `getpid`
 
