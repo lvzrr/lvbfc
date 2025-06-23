@@ -128,7 +128,14 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 		if (x2->op == '[')
 			plevel += x2->len;
 	  	else if (x2->op == ']')
+		{
 			plevel -= x2->len;
+			if (plevel < 0)
+			{
+				free((char *)ogp);
+				THROW_ERR("unmatched loop guards @ seq. %lu", out, i);
+			}
+		}
 		if (x2->op == '[' && i + 2 < out.size
 			&& (x2 + 1)->op != '-' && (x2 + 1)->len == 1 && (x2 + 2)->op == ']')
 		{
@@ -179,7 +186,7 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 		if (dmp)
 			printf("op: %c  len: %lu plevel: %ld\n", x2->op, x2->len, plevel);
 	}
-	if (plevel <= 0)
+	if (plevel != 0)
 	{
 		free((char *)ogp);
 		THROW_ERR("unmatched loop guards", out);
