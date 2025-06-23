@@ -3,7 +3,7 @@
 #define COLOR_GREEN  "\033[32m"
 #define COLOR_RESET  "\033[0m"
 
-char	*read_file(const char *name, bool x, bool can)
+char	*read_file(const char *name, bool x, bool can, bool intr)
 {
 	FILE *f = fopen(name,"rb");
 	if (!f)
@@ -24,6 +24,8 @@ char	*read_file(const char *name, bool x, bool can)
 	size_t i = 0;
 	while ((c = fgetc(f)) != EOF)
 	{
+		if (intr && c == '$')
+			src[i++] = c;
 		if (x && (c == ';' || c == '&' || c == '='))
 			src[i++] = c;
 		if (can && c == '?')

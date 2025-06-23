@@ -1,6 +1,6 @@
 #include "lvbfc.h"
 
-static inline void phelp(void)
+static inline	void phelp(void)
 {
 	printf(
 		"lvbfc - Brainfuck compiler\n"
@@ -15,24 +15,15 @@ static inline void phelp(void)
 		"\n"
 		"Options:\n"
 		"  --no-strict       Disable safety checks for loops @ comptime\n"
-		"\n"
 		"  --no-wrap         Disable buffer wraparound (executes faster)\n"
-		"\n"
 		"  --heap            Use heap allocation for dynamic memory growth\n"
-		"\n"
 		"  --x               Enable syscall shellcode emit mode (experimental)\n"
 		"                    Use `;` x N to mark syscall byte count\n"
-		"\n"
-		"  --allow-canary    Enable `?` and `??` instructions"
-		"\n"
+		"  --allow-canary    Enable `?` and `??` instructions (buffer inspection)\n"
+		"  --allow-intrinsics Enable special `$` operations (memset, math, etc.)\n"
 		"  --stacksize=N     Initial memory size in bytes (default: 65536)\n"
-		"\n"
-		"  --opt-level=N     Optimization passes (default: 0), for now it doesn't\n"
-		"                    change a lot honestly\n"
-		"                    More ≠ better (balance iteration vs comptime)\n"
-		"\n"
+		"  --opt-level=N     Optimization passes (default: 0), currently trivial\n"
 		"  --dmp-tok         Print parsed token stream (debugging only)\n"
-		"\n"
 		"  --help            Show this help message and exit\n"
 		"\n"
 		"Output:\n"
@@ -87,6 +78,7 @@ int main(int argc, char **argv)
 	size_t	optl = 0;
 	bool	x = false;
 	bool	can = false;
+	bool	intr = false;
 
 	if (argc < 2)
 	{
@@ -103,6 +95,8 @@ int main(int argc, char **argv)
 			wrap = false;
 	  	else if (strcmp(argv[i], "--allow-canary") == 0) 
 			can = true;
+	  	else if (strcmp(argv[i], "--allow-intrinsics") == 0) 
+			intr = true;
 	  	else if (strcmp(argv[i], "--heap") == 0) 
 			heap = true;
 	  	else if (strcmp(argv[i], "--x") == 0) 
@@ -142,7 +136,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "no file to compile\n");
 		return EXIT_FAILURE;
 	}
-	char *src = read_file(filename, x, can);
+	char *src = read_file(filename, x, can, intr);
 	if (!src)
 		return EXIT_FAILURE;
 	t_vec o = lex(src, strict, shstrm);
@@ -160,7 +154,7 @@ int main(int argc, char **argv)
 	}
 	printf("[lvbfc] compiling\n");
 	if (heap)
-		emit_heap(&o, optl, x);
+		emit_heap(&o, stsize, optl, x);
 	else
 		emit(&o, wrap, stsize, optl, x);
 	compile_c(outname);
