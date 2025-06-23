@@ -116,7 +116,7 @@ WARNING: potential dangerous loop (no '-' in loop) detected @ seq. 24
 [lvbfc] compiling
 Optimized 0 ops
 Collapsed from 106 total-length ops to 58 operations
-[lvbfc] compililed successfully!
+[lvbfc] compiled successfully!
 
 $ ./bfout
 
@@ -128,7 +128,7 @@ WARNING: potential dangerous loop (no '-' in loop) detected @ seq. 24
 [lvbfc] compiling
 Optimized 0 ops
 Collapsed from 108 total-length ops to 59 operations
-[lvbfc] compililed successfully!
+[lvbfc] compiled successfully!
 
 $ ./bfout
 
@@ -173,7 +173,7 @@ Expected output:
 $ lvbfc --no-wrap  --no-strict ptrs.b --x --allow-canary
 
 [lvbfc] compiling
-[lvbfc] compililed successfully!
+[lvbfc] compiled successfully!
 
 $ ./bfout
 [CANARY] Dumping 21 bytes:

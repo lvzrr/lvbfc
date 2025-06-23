@@ -164,6 +164,6 @@ int main(int argc, char **argv)
 	else
 		emit(&o, wrap, stsize, optl, x);
 	compile_c(outname);
-	printf("[lvbfc] compililed successfully!\n");
+	printf("[lvbfc] compiled successfully!\n");
 	return (0);
 }
