@@ -26,7 +26,7 @@ make
 ```
 
 >[!NOTE]
->running `make` will autofetch llv as it is it's own repo
+>running `make` will autofetch llv as it has it's own repo
 
 ## Usage
 ```
