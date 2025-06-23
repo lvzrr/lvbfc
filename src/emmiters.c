@@ -130,7 +130,7 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool x)
 				}
 				break;
 			case '&':
-				fprintf(f, "uintptr_t __ptr =(uintptr_t)buf; __builtin_memcpy(buf, &__ptr, sizeof(uintptr_t));");
+				fprintf(f, "uintptr_t __ptr =(uintptr_t)buf; __builtin_memcpy(buf, &__ptr, sizeof(uintptr_t));\n");
 			break;
 			case '?':
 				if (x.len == 1) {
@@ -312,7 +312,7 @@ void	emit_heap(t_vec *v, size_t op, bool x)
 				}
 			break;
 			case '&':
-				fprintf(f, "uintptr_t __ptr =(uintptr_t)buf; __builtin_memcpy(buf, &__ptr, sizeof(uintptr_t));");
+				fprintf(f, "uintptr_t __ptr =(uintptr_t)buf; __builtin_memcpy(buf, &__ptr, sizeof(uintptr_t));\n");
 			break;
 			case '?':
 				if (x.len == 1) {
