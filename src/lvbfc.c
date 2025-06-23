@@ -27,7 +27,8 @@ static inline void phelp(void)
 		"\n"
 		"  --stacksize=N     Initial memory size in bytes (default: 65536)\n"
 		"\n"
-		"  --opt-level=N     Optimization passes (default: 1)\n"
+		"  --opt-level=N     Optimization passes (default: 0), for now it doesn't\n"
+		"                    change a lot honestly\n"
 		"                    More ≠ better (balance iteration vs comptime)\n"
 		"\n"
 		"  --dmp-tok         Print parsed token stream (debugging only)\n"
@@ -83,7 +84,7 @@ int main(int argc, char **argv)
 	bool	wrap = true;
 	bool	heap = false;
 	size_t	stsize = 65536;
-	size_t	optl = 1;
+	size_t	optl = 0;
 	bool	x = false;
 	bool	can = false;
 

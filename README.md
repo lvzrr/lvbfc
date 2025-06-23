@@ -46,8 +46,8 @@ Options:
 
   --stacksize=N     Initial memory size in bytes (default: 65536)
 
-  --opt-level=N     Optimization passes (default: 1)
-                    More ≠ better (balance iteration vs comptime)
+  --opt-level=N     Optimization passes (default: 0) rm they don't
+                    change a lot honestly
 
   --dmp-tok         Print parsed token stream (debugging only)
 
