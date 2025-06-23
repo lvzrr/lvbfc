@@ -18,7 +18,7 @@ static inline void phelp(void)
 		"\n"
 		"  --no-wrap         Disable buffer wraparound (executes faster)\n"
 		"\n"
-		"  --opts            Use heap allocation for dynamic memory growth\n"
+		"  --heap            Use heap allocation for dynamic memory growth\n"
 		"\n"
 		"  --x               Enable syscall shellcode emit mode (experimental)\n"
 		"                    Use `;` x N to mark syscall byte count\n"
@@ -47,8 +47,8 @@ static inline void phelp(void)
 		"\n"
 		"Suggestions:\n"
 		"  - Fastest:             --no-wrap --opt-level=5\n"
-		"  - Mid‑range:           --opts --opt-level=5 (heap)\n"
-		"  - Shellcode mode:      --x with `;;;;;;` to exec 6‑byte syscall (the same as --opts)\n"
+		"  - Mid‑range:           --heap\n"
+		"  - Shellcode mode:      --x with `;;;;;;` to exec 6‑byte syscall\n"
 		"  - Safe default:        no flags\n"
 	);
 }
@@ -103,7 +103,7 @@ int main(int argc, char **argv)
 			wrap = false;
 	  	else if (strcmp(argv[i], "--allow-canary") == 0) 
 			can = true;
-	  	else if (strcmp(argv[i], "--opts") == 0) 
+	  	else if (strcmp(argv[i], "--heap") == 0) 
 			heap = true;
 	  	else if (strcmp(argv[i], "--x") == 0) 
 			x = true;
@@ -126,7 +126,7 @@ int main(int argc, char **argv)
 			phelp();
 			return (0);
 		}
-		else if (strncmp(argv[i], "--", 2) == 0) 
+		else if (*argv[i] == '-') 
 		{
 			fprintf(stderr, "Unknown flag: %s\n\n", argv[i]);
 			phelp();
