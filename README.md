@@ -4,15 +4,53 @@ Brainfuck to C transpiler + compiler written in C, using the llv library.
 
 ## Features
 
-- Converts Brainfuck code into optimized C
-- Pattern optimizations (e.g., [-], M, C)
-- Strict mode for loop sanity checks
-- Operation cancellation/balancing
-- Code sanitization, dead‑code + infinite‑loop removal
-- Outputs native binaries
-- Wrapping buffer mode with no undefined behavior (optional)
-- Optional heap mode for dynamic memory
-- Optional syscall injection mode from the current cursor up to N (via Brainfuck `;` count)
+- Brainfuck to optimized C transpilation
+  - Converts source into efficient, readable, and compilable C code
+  - Uses custom pattern-based optimization passes
+
+- Operation collapsing and cancellation
+  - Removes redundant operations (`++--`, `><<>>`) at compile time
+
+- Loop analysis and strict mode
+  - Detects invalid or infinite loops (`[+]`, `[[` without `-]`)
+  - Can be disabled with `--no-strict`
+
+- Dead code and infinite loop pruning
+  - Eliminates unreachable or semantically null code
+
+- Native binary output
+  - Generates both a `.c` file and a native executable via GCC or Clang
+
+- Wraparound control
+  - Optional circular buffer (enabled by default)
+  - Disabling with `--no-wrap` removes wrap semantics for raw speed
+
+- Heap mode (`--heap`)
+  - Dynamically allocated tape for programs that need large or growing memory
+
+- Shellcode mode (`--x`)
+  - Use `;` to inject and execute raw syscalls from memory
+  - Supports AVX/SSE copy paths for aligned blocks
+
+- Canary instrumentation (`--allow-canary`)
+  - `?` inserts debug markers into C output
+  - `??` dumps the buffer (from index 0 to current ptr) in hex format
+
+- Pointer abuse extensions (enabled with `--x`)
+  - `&`, `=`, and extended stack/pointer manipulation support
+  - Enables self-modifying logic and direct tape indirection
+
+- Debugging tools
+  - `--dmp-tok` to dump parsed token stream before compilation
+  - Full visibility into optimization pipeline
+
+- Portable C build
+  - No external dependencies beyond standard C and `llv` lib
+  - POSIX-compliant; works with both `gcc` and `clang`
+
+- Compliant and fast
+  - Passes full [brainfuck.org/tests.b](https://brainfuck.org/tests.b)
+  - Native output runs faster than most interpreters or naive JITs
 
 ## Build
 
