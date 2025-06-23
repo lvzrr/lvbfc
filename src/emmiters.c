@@ -89,31 +89,64 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool x)
 					x.len);
 				break;
 			case ';':
-				fprintf(f,
-					"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
-					"__builtin_memcpy(execbuf, buf, %lu);\n"
-					"((void(*)(void))execbuf)();\n"
-					"__builtin_memset(execbuf, 0, %lu);\n",
-					x.len, x.len);
+				if (x.len % 32 == 0) {
+					fprintf(f,
+						"#include <immintrin.h>\n"
+						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
+						"{\n"
+						"    size_t chunks = %lu / 32;\n"
+						"    for (size_t i = 0; i < chunks; ++i) {\n"
+						"        __m256i chunk = _mm256_loadu_si256((const __m256i *)(buf + i * 32));\n"
+						"        _mm256_storeu_si256((__m256i *)(execbuf + i * 32), chunk);\n"
+						"    }\n"
+						"}\n"
+						"((void(*)(void))execbuf)();\n"
+						"__builtin_memset(execbuf, 0, %lu);\n",
+						x.len, x.len
+					);
+				} else if (x.len % 16 == 0) {
+					fprintf(f,
+						"#include <emmintrin.h>\n"
+						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
+						"{\n"
+						"    size_t chunks = %lu / 16;\n"
+						"    for (size_t i = 0; i < chunks; ++i) {\n"
+						"        __m128i chunk = _mm_loadu_si128((const __m128i *)(buf + i * 16));\n"
+						"        _mm_storeu_si128((__m128i *)(execbuf + i * 16), chunk);\n"
+						"    }\n"
+						"}\n"
+						"((void(*)(void))execbuf)();\n"
+						"__builtin_memset(execbuf, 0, %lu);\n",
+						x.len, x.len
+					);
+				} else {
+					fprintf(f,
+						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
+						"__builtin_memcpy(execbuf, buf, %lu);\n"
+						"((void(*)(void))execbuf)();\n"
+						"__builtin_memset(execbuf, 0, %lu);\n",
+						x.len, x.len
+					);
+				}
 				break;
-				case '?':
-					if (x.len == 1) {
-						fprintf(f, "/*\n\n CANARY \n\n */\n");
-					} else {
-						fprintf(f,
-							"/* CANARY: dump buffer up to and including buf (%%zu bytes) */\n"
-							"{\n"
-							"    size_t __n = (size_t)(buf - arr) + 1;\n"
-							"    fprintf(stderr, \"[CANARY] Dumping %%zu bytes:\\n\", __n);\n"
-							"    for (size_t __i = 0; __i < __n; __i++) {\n"
-							"        fprintf(stderr, \"%%02X \", arr[__i]);\n"
-							"        if ((__i + 1) %% 40 == 0) fprintf(stderr, \"\\n\");\n"
-							"    }\n"
-							"    if (__n %% 40 != 0) fprintf(stderr, \"\\n\");\n"
-							"}\n"
-						);
-					}
-					break;
+			case '?':
+				if (x.len == 1) {
+					fprintf(f, "/*\n\n CANARY \n\n */\n");
+				} else {
+					fprintf(f,
+						"/* CANARY: dump buffer up to and including buf (%%zu bytes) */\n"
+						"{\n"
+						"    size_t __n = (size_t)(buf - arr) + 1;\n"
+						"    fprintf(stderr, \"[CANARY] Dumping %%zu bytes:\\n\", __n);\n"
+						"    for (size_t __i = 0; __i < __n; __i++) {\n"
+						"        fprintf(stderr, \"%%02X \", arr[__i]);\n"
+						"        if ((__i + 1) %% 40 == 0) fprintf(stderr, \"\\n\");\n"
+						"    }\n"
+						"    if (__n %% 40 != 0) fprintf(stderr, \"\\n\");\n"
+						"}\n"
+					);
+				}
+				break;
 			default: break;
 		}
 		i++;
@@ -236,13 +269,46 @@ void	emit_heap(t_vec *v, size_t op, bool x)
 					x.len);
 				break;
 			case ';':
-				fprintf(f,
-					"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
-					"__builtin_memcpy(execbuf, buf, %lu);\n"
-					"((void(*)(void))execbuf)();\n"
-					"__builtin_memset(execbuf, 0, %lu);\n",
-					x.len, x.len);
-				break;
+				if (x.len % 32 == 0) {
+					fprintf(f,
+						"#include <immintrin.h>\n"
+						"if (execbuf == map_failed) { perror(\"mmap failed\"); exit(exit_failure); }\n"
+						"{\n"
+						"    size_t chunks = %lu / 32;\n"
+						"    for (size_t i = 0; i < chunks; ++i) {\n"
+						"        __m256i chunk = _mm256_loadu_si256((const __m256i *)(buf + i * 32));\n"
+						"        _mm256_storeu_si256((__m256i *)(execbuf + i * 32), chunk);\n"
+						"    }\n"
+						"}\n"
+						"((void(*)(void))execbuf)();\n"
+						"__builtin_memset(execbuf, 0, %lu);\n",
+						x.len, x.len
+					);
+				} else if (x.len % 16 == 0) {
+					fprintf(f,
+						"#include <emmintrin.h>\n"
+						"if (execbuf == map_failed) { perror(\"mmap failed\"); exit(exit_failure); }\n"
+						"{\n"
+						"    size_t chunks = %lu / 16;\n"
+						"    for (size_t i = 0; i < chunks; ++i) {\n"
+						"        __m128i chunk = _mm_loadu_si128((const __m128i *)(buf + i * 16));\n"
+						"        _mm_storeu_si128((__m128i *)(execbuf + i * 16), chunk);\n"
+						"    }\n"
+						"}\n"
+						"((void(*)(void))execbuf)();\n"
+						"__builtin_memset(execbuf, 0, %lu);\n",
+						x.len, x.len
+					);
+				} else {
+					fprintf(f,
+						"if (execbuf == map_failed) { perror(\"mmap failed\"); exit(exit_failure); }\n"
+						"__builtin_memcpy(execbuf, buf, %lu);\n"
+						"((void(*)(void))execbuf)();\n"
+						"__builtin_memset(execbuf, 0, %lu);\n",
+						x.len, x.len
+					);
+				}
+			break;
 			case '?':
 				if (x.len == 1) {
 					fprintf(f, "/*\n\n CANARY \n\n */\n");
