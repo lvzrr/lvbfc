@@ -27,7 +27,7 @@ make
 ```
 
 >[!NOTE]
->running `make` will autofetch llv as it has it's own repo
+>running `make` will autofetch llv as it has its own repo
 
 ## Usage
 ```
@@ -60,12 +60,12 @@ Output:
 
 Examples:
   ./lvbfc hello.b hello         # compile to ./hello
-  ./lvbfc code.b --opts         # safer & dynamic memory growth
+  ./lvbfc code.b --heap         # safer & dynamic memory growth
   ./lvbfc syscall.b --x         # run syscall via shellcode
   ./lvbfc file.b --stacksize=0  # invalid → error
 
 Suggestions:
-  - Fastest:             --no-wrap --opt-level=5
+  - Fastest:             --no-wrap --opt-level=1
   - Mid‑range:           --heap
   - Shellcode mode:      --x with `;;;;;;` to exec 6‑byte syscall
   - Safe default:        no flags
