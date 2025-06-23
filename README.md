@@ -299,6 +299,9 @@ return 0;
 - C compiler: GCC or Clang
 - make
 
+>[!NOTE]
+>running `make` will autofetch llv as it is it's own repo
+
 ## Tests
 
 Compliant with https://brainfuck.org/tests.b (included under tests/compliance) and includes various example programs.
