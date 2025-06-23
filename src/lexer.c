@@ -109,7 +109,9 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 				{
 					x.op = 'Z';
 					x.len = 1;
+					lv_vec_push(&out, &x, 1);
 					src += 2;
+					continue;
 				}
 				else
 				{
