@@ -75,6 +75,21 @@ Suggestions:
   - Safe default:        no flags
 ```
 
+## Custom Operators (Shellcode Mode: `--x`)
+
+When compiling with `--x`, `lvbfc` enables a set of **non-standard extended operators** designed to support raw memory inspection, pointer manipulation, and direct shellcode injection.
+
+These operators are **only active when `--x` is enabled**. They will be ignored or rejected in standard modes.
+
+| Operator | Name                  | Description |
+|----------|-----------------------|-------------|
+| `;`      | Syscall Exec Marker   | Copies `N` bytes from the tape (starting at the current pointer) into an executable buffer and runs it. Supports AVX2/SSE if aligned, does no bounds checking. |
+| `?`      | Canary Marker         | Inserts a debug comment in the generated C code. |
+| `??`     | Buffer Dump           | Prints a hexadecimal dump of the memory from the start of the tape up to the current pointer. |
+| `&`      | Pointer Writer        | Writes the address of `buf + (N - 1)` into the tape at the starting at the current cell (as a raw `uintptr_t`). Allows constructing absolute syscall arguments. Stackable: e.g. `&&&` writes address of `buf + 2` at `buf`, does no bounds checking. |
+| `=`      | Pointer Jump          | Interprets the current cell as a pointer (raw `uintptr_t`) and sets `buf` to that address. Enables pointer-based control flow and tape indirection, does no bounds checking. |
+
+
 ## The 'Canary' Feature
 
 The `canary` feature, enabled by the `--allow-canary` option, introduces special debugging instructions into your Brainfuck code using the `?` character.
@@ -123,20 +138,11 @@ Hello World!
 
 ```
 
-## Custom Operators (Shellcode Mode: `--x`)
+## The 'Pointer' Feature
 
-When compiling with `--x`, `lvbfc` enables a set of **non-standard extended operators** designed to support raw memory inspection, pointer manipulation, and direct shellcode injection.
+- The & instruction writes the raw address of a memory location into the current cell. Specifically, it stores the address of buf + (N - 1) as a uintptr_t value starting at the current tape cell. Multiple & instructions are stackable: each one increases N, and the resulting address overwrites the previous one.
 
-These operators are **only active when `--x` is enabled**. They will be ignored or rejected in standard modes.
-
-| Operator | Name                  | Description |
-|----------|-----------------------|-------------|
-| `;`      | Syscall Exec Marker   | Copies `N` bytes from the tape (starting at the current pointer) into an executable buffer and runs it. Supports AVX2/SSE if aligned, does no bounds checking. |
-| `?`      | Canary Marker         | Inserts a debug comment in the generated C code. |
-| `??`     | Buffer Dump           | Prints a hexadecimal dump of the memory from the start of the tape up to the current pointer. |
-| `&`      | Pointer Writer        | Writes the address of `buf + (N - 1)` into the tape at the starting at the current cell (as a raw `uintptr_t`). Allows constructing absolute syscall arguments. Stackable: e.g. `&&&` writes address of `buf + 2` at `buf`, does no bounds checking. |
-| `=`      | Pointer Jump          | Interprets the current cell as a pointer (raw `uintptr_t`) and sets `buf` to that address. Enables pointer-based control flow and tape indirection, does no bounds checking. |
-
+- The = instruction jumps the internal pointer to the address currently stored at the tape's current position. This effectively sets buf to a new location, allowing arbitrary pointer redirection. The contents are interpreted as a raw uintptr_t, and no bounds checking is performed.
 
 To test movement functionality compile `ptrs.b` in `tests` with --x --allow-canary.
 
