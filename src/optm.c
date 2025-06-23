@@ -178,6 +178,7 @@ void	compact_vector(t_vec *v)
 
 void	optimize(t_vec *v, size_t level)
 {
+	if (!level) return ;
 	for (size_t pass = 0; pass < level; pass++)
 	{
 		size_t b4 = v->size;
