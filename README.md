@@ -278,7 +278,7 @@ return 0;
 * Because the syscall has no output, you'll only see effects with strace or a debugger.
 
 >[!NOTE]
-> `getpid.b` can be found in `tests/`
+> `getpid.b` can be found in `tests/`, even though is a more compact version
 
 ## TODO
 
