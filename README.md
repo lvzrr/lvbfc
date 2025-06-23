@@ -200,39 +200,7 @@ This (without --allow-canary for clarity) literally transpiles to:
 int main(void) {uint8_t arr[65536] = {0};
 uint8_t *buf = &(arr[0]);
 void *execbuf = mmap(NULL, 512, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-buf += 1;
-*buf += 9;
-while (*buf) {buf -= 1;
-*buf += 20;
-buf += 1;
-*buf -= 1;
-}buf -= 1;
-*buf += 4;
-buf += 2;
-*buf += 4;
-while (*buf) {buf -= 1;
-*buf += 10;
-buf += 1;
-*buf -= 1;
-}buf -= 1;
-*buf -= 1;
-buf += 5;
-*buf += 3;
-while (*buf) {buf -= 1;
-*buf += 5;
-buf += 1;
-*buf -= 1;
-}buf += 0;
-*buf += 5;
-buf += 2;
-*buf += 20;
-while (*buf) {buf -= 1;
-*buf += 10;
-buf += 1;
-*buf -= 1;
-}buf -= 1;
-*buf -= 5;
-buf -= 7;
+// buffer movements
 if (execbuf == MAP_FAILED) { perror("mmap failed"); exit(EXIT_FAILURE); }
 __builtin_memcpy(execbuf, buf, 8);
 ((void(*)(void))execbuf)();
@@ -241,6 +209,48 @@ munmap(execbuf, 512);
 return 0;
 }
 ```
+
+But in case we wanted a faster load, we can use more `;` than needed to match a multiple of 16 or 32, that way this:
+
+```brainfuck
+[getpid.b 
+executes syscall getpid
+lv]
+
+>+++++++++[<++++++++++++++++++++>-]<++++
+>>++++[<++++++++++>-]<->>>>>+++[<+++++>-]
++++++>>++++++++++++++++++++[<++++++++++>-]<-----
+<<<<<<<;;;;;;;;;;;;;;;;
+```
+Turns into this
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include <stdint.h>
+#include <sys/mman.h>
+#include <immintrin.h>
+#include <emmintrin.h>
+#include <stdlib.h>
+
+int main(void) {__attribute__((aligned(256))) uint8_t arr[65536] = {0};uint8_t *buf = &(arr[0]);
+void *execbuf = mmap(NULL, 512, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+// buffer movements
+if (execbuf == MAP_FAILED) { perror("mmap failed"); exit(EXIT_FAILURE); }
+{
+    size_t chunks = 16 / 16;
+    for (size_t i = 0; i < chunks; ++i) {
+        __m128i chunk = _mm_loadu_si128((const __m128i *)(buf + i * 16));
+        _mm_storeu_si128((__m128i *)(execbuf + i * 16), chunk);
+    }
+}
+((void(*)(void))execbuf)();
+__builtin_memset(execbuf, 0, 16);
+munmap(execbuf, 512);
+return 0;
+}
+```
+
 
 ### Notes
 

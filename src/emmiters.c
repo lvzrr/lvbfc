@@ -18,6 +18,8 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool x)
 		"#include <string.h>\n"
 		"#include <stdint.h>\n"
 		"#include <sys/mman.h>\n"
+		 "#include <immintrin.h>\n"
+		 "#include <emmintrin.h>\n"
 		"#include <stdlib.h>\n\n"
 		"int main(void) {"
 		"__attribute__((aligned(256))) uint8_t arr[%lu] = {0};"
@@ -91,7 +93,6 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool x)
 			case ';':
 				if (x.len % 32 == 0) {
 					fprintf(f,
-						"#include <immintrin.h>\n"
 						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
 						"{\n"
 						"    size_t chunks = %lu / 32;\n"
@@ -106,7 +107,6 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool x)
 					);
 				} else if (x.len % 16 == 0) {
 					fprintf(f,
-						"#include <emmintrin.h>\n"
 						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
 						"{\n"
 						"    size_t chunks = %lu / 16;\n"
@@ -180,6 +180,8 @@ void	emit_heap(t_vec *v, size_t op, bool x)
 		"#include <string.h>\n"
 		"#include <stdint.h>\n"
 		"#include <sys/mman.h>\n"
+		"#include <immintrin.h>\n"
+		"#include <emmintrin.h>\n"
 		"#include <stdlib.h>\n\n"
 		"#define GROW_BUF(n) \\\n"
 		"do { \\\n"
@@ -271,7 +273,6 @@ void	emit_heap(t_vec *v, size_t op, bool x)
 			case ';':
 				if (x.len % 32 == 0) {
 					fprintf(f,
-						"#include <immintrin.h>\n"
 						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(exit_failure); }\n"
 						"{\n"
 						"    size_t chunks = %lu / 32;\n"
@@ -286,7 +287,6 @@ void	emit_heap(t_vec *v, size_t op, bool x)
 					);
 				} else if (x.len % 16 == 0) {
 					fprintf(f,
-						"#include <emmintrin.h>\n"
 						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(exit_failure); }\n"
 						"{\n"
 						"    size_t chunks = %lu / 16;\n"
