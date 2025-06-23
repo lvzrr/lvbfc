@@ -27,7 +27,7 @@ static inline void phelp(void)
 		"\n"
 		"  --stacksize=N     Initial memory size in bytes (default: 65536)\n"
 		"\n"
-		"  --opt-level=N     Optimization passes (default: 3)\n"
+		"  --opt-level=N     Optimization passes (default: 1)\n"
 		"                    More ≠ better (balance iteration vs comptime)\n"
 		"\n"
 		"  --dmp-tok         Print parsed token stream (debugging only)\n"
