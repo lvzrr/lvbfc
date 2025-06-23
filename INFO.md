@@ -1,3 +1,17 @@
+## Table of Contents
+
+- [Custom Operators (Shellcode Mode: `--x`)](#custom-operators-shellcode-mode---x)
+- [The 'Canary' Feature](#the-canary-feature)
+- [The 'Pointer' Feature](#the-pointer-feature)
+- [Syscall Mode Example: `getpid`](#syscall-mode-example-getpid)
+- [`$` Intrinsic Operations (Experimental)](#-intrinsic-operations-experimental)
+  - [Example: `propagateintr.b`](#example-brainfuck-program-propagateintrb)
+  - [Example: `memsetintr.b`](#example-brainfuck-program-memsetintrb)
+- [Requirements](#requirements)
+- [Tests](#tests)
+- [Benchmarks (`mandelbrot.b`)](#benchmarks-mandelbrotb)
+- [TODO](#todo)
+
 ## Custom Operators (Shellcode Mode: `--x`)
 
 When compiling with `--x`, `lvbfc` enables a set of **non-standard extended operators** designed to support raw memory inspection, pointer manipulation, and direct shellcode injection.
