@@ -213,10 +213,6 @@ return 0;
 But in case we wanted a faster load, we can use more `;` than needed to match a multiple of 16 or 32, that way this:
 
 ```brainfuck
-[getpid.b 
-executes syscall getpid
-lv]
-
 >+++++++++[<++++++++++++++++++++>-]<++++
 >>++++[<++++++++++>-]<->>>>>+++[<+++++>-]
 +++++>>++++++++++++++++++++[<++++++++++>-]<-----
