@@ -1,5 +1,8 @@
 #include "lvbfc.h"
 
+#define COLOR_GREEN  "\033[32m"
+#define COLOR_RESET  "\033[0m"
+
 char	*read_file(const char *name, bool x, bool can)
 {
 	FILE *f = fopen(name,"rb");
@@ -44,6 +47,7 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 	t_vec		out = {0};
 	const char 		*ogp = src;
 	size_t		wc = 0;
+	size_t		totalopts = 0;
 
 	out = lv_vec(100, sizeof(t_tokenseq));
 	while (*src)
@@ -114,6 +118,7 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 				}
 			}
 		}
+		totalopts += x.len;
 		lv_vec_push(&out, &x, 1);
 	}
 	size_t plevel = 0;
@@ -179,5 +184,8 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 		free((char *)ogp);
 		THROW_ERR("unmatched loop guards", out);
 	}
+    fprintf(stderr,
+        COLOR_GREEN "Compacted %lu operations into %lu\n" COLOR_RESET,
+        totalopts, out.size);
 	return (free((char *)ogp), out);
 }
