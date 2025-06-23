@@ -92,7 +92,7 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool x)
 				fprintf(f,
 					"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
 					"__builtin_memcpy(execbuf, buf, %lu);\n"
-					"((void(*)(uint8_t *))execbuf)(buf);\n"
+					"((void(*)(void))execbuf)();\n"
 					"__builtin_memset(execbuf, 0, %lu);\n",
 					x.len, x.len);
 				break;
@@ -239,7 +239,7 @@ void	emit_heap(t_vec *v, size_t op, bool x)
 				fprintf(f,
 					"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
 					"__builtin_memcpy(execbuf, buf, %lu);\n"
-					"((void(*)(uint8_t *))execbuf)(buf);\n"
+					"((void(*)(void))execbuf)();\n"
 					"__builtin_memset(execbuf, 0, %lu);\n",
 					x.len, x.len);
 				break;
