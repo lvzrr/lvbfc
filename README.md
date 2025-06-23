@@ -107,7 +107,7 @@ $ cat helloworld.b
 ---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++??.
 
 NOTE: this program doesn't end at the end of the
-string, the debug stops at the current pos. of the ptr
+string the debug stops at the current pos. of the ptr
 
 $ lvbfc helloworld.b --no-wrap --no-strict
 
