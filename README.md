@@ -113,7 +113,7 @@ Decimal: 184, 39, 0, 0, 0, 15, 5, 195
 > This sets the memory buffer with the bytes above:
 
 ```brainfuck
-NOTE: run with --allow-canary to see the
+NOTE: run with allow canary to see the
       values beign added in real time
 
 ++++++++++ 10
@@ -193,15 +193,15 @@ This will literally evaluate to this:
 ```shell
 $ ./bfout
 [CANARY] Dumping 2 bytes:
-B5 00
+B8 00 
 [CANARY] Dumping 6 bytes:
-B5 27 00 00 00 00
+B8 27 00 00 00 00 
 [CANARY] Dumping 7 bytes:
-B5 27 00 00 00 0F 00
+B8 27 00 00 00 0F 00 
 [CANARY] Dumping 8 bytes:
-B5 27 00 00 00 0F 05 00
+B8 27 00 00 00 0F 05 00 
 [CANARY] Dumping 8 bytes:
-B5 27 00 00 00 0F 05 C3
+B8 27 00 00 00 0F 05 C3 
 ```
 
 This (without --allow-canary for clarity) literally transpiles to:

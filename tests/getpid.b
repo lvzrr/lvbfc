@@ -1,4 +1,4 @@
-NOTE: run with --allow-canary to see the
+NOTE: run with allow canary to see the
       values beign added in real time
 
 ++++++++++ 10
