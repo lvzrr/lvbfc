@@ -96,9 +96,24 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool x)
 					"__builtin_memset(execbuf, 0, %lu);\n",
 					x.len, x.len);
 				break;
-			case '?':
-				fprintf(f,"/*\n\n CANARY \n\n */");
-				break;
+				case '?':
+					if (x.len == 1) {
+						fprintf(f, "/*\n\n CANARY \n\n */\n");
+					} else {
+						fprintf(f,
+							"/* CANARY: dump buffer up to and including buf (%%zu bytes) */\n"
+							"{\n"
+							"    size_t __n = (size_t)(buf - arr) + 1;\n"
+							"    fprintf(stderr, \"[CANARY] Dumping %%zu bytes:\\n\", __n);\n"
+							"    for (size_t __i = 0; __i < __n; __i++) {\n"
+							"        fprintf(stderr, \"%%02X \", arr[__i]);\n"
+							"        if ((__i + 1) %% 40 == 0) fprintf(stderr, \"\\n\");\n"
+							"    }\n"
+							"    if (__n %% 40 != 0) fprintf(stderr, \"\\n\");\n"
+							"}\n"
+						);
+					}
+					break;
 			default: break;
 		}
 		i++;
@@ -229,7 +244,22 @@ void	emit_heap(t_vec *v, size_t op, bool x)
 					x.len, x.len);
 				break;
 			case '?':
-				fprintf(f,"/*\n\n CANARY \n\n */");
+				if (x.len == 1) {
+					fprintf(f, "/*\n\n CANARY \n\n */\n");
+				} else {
+					fprintf(f,
+						"/* CANARY: dump buffer up to and including buf (%%zu bytes) */\n"
+						"{\n"
+						"    size_t __n = (size_t)(buf - safeg) + 1;\n"
+						"    fprintf(stderr, \"[CANARY] Dumping %%zu bytes:\\n\", __n);\n"
+						"    for (size_t __i = 0; __i < __n; __i++) {\n"
+						"        fprintf(stderr, \"%%02X \", safeg[__i]);\n"
+						"        if ((__i + 1) %% 40 == 0) fprintf(stderr, \"\\n\");\n"
+						"    }\n"
+						"    if (__n %% 40 != 0) fprintf(stderr, \"\\n\");\n"
+						"}\n"
+					);
+				}
 				break;
 			default:
 				break;

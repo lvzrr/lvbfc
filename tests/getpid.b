@@ -1,3 +1,6 @@
+NOTE: run with --allow-canary to see the
+      values beign added in real time
+
 ++++++++++ 10
 ++++++++++ 20
 ++++++++++ 30
@@ -19,6 +22,7 @@
 ++++       184
 >          first byte set
 
+??
 
 ++++++++++ 10
 ++++++++++ 20
@@ -29,12 +33,18 @@
 >          forth byte set
 >          sixth byte set
 
+??
+
 ++++++++++ 10
 +++++      15
 >          seventh byte set
 
+??
+
 +++++      5
 >          eighth byte set
+
+??
 
 ++++++++++ 10
 ++++++++++ 20
@@ -56,6 +66,8 @@
 ++++++++++ 180
 ++++++++++ 190
 +++++      195
+
+??
 
 <<<<<<<
 ;;;;;;;;
