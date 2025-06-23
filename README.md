@@ -25,6 +25,9 @@ Brainfuck to C transpiler + compiler written in C, using the llv library.
 make
 ```
 
+>[!NOTE]
+>running `make` will autofetch llv as it is it's own repo
+
 ## Usage
 ```
 lvbfc - Brainfuck compiler
@@ -298,9 +301,6 @@ return 0;
 
 - C compiler: GCC or Clang
 - make
-
->[!NOTE]
->running `make` will autofetch llv as it is it's own repo
 
 ## Tests
 
