@@ -144,14 +144,28 @@ When compiling with `--x`, `lvbfc` enables a set of **non-standard extended oper
 
 These operators are **only active when `--x` is enabled**. They will be ignored or rejected in standard modes.
 
-### Available Custom Operators
-
 | Operator | Name                  | Description |
 |----------|-----------------------|-------------|
-| `;`      | Syscall Exec Marker   | Copies `N` bytes from the tape (starting at the current pointer) to an executable buffer and runs it. Useful for raw syscall shellcode. |
-| `?`      | Canary Marker         | Inserts a debug marker in the emitted code. No runtime behavior, just a visual marker. |
-| `??`     | Buffer Dump           | Prints a hexadecimal dump of the tape from the start up to the current pointer. Used for live memory inspection during debugging. |
-| `&`      | Pointer Writer        | Writes the current `buf` pointer (as a raw address) into the tape at the current position. Effectively serializes the pointer as `sizeof(uintptr_t)` bytes. |
+| `;`      | Syscall Exec Marker   | Copies `N` bytes from the tape (starting at the current pointer) into an executable buffer and runs it. Supports AVX2/SSE if aligned. |
+| `?`      | Canary Marker         | Inserts a debug comment in the generated C code. |
+| `??`     | Buffer Dump           | Prints a hexadecimal dump of the memory from the start of the tape up to the current pointer. |
+| `&`      | Pointer Writer        | Writes the address of `buf + (N - 1)` into the tape at the current cell (as a raw `uintptr_t`). Allows constructing absolute syscall arguments. Stackable: e.g. `&&&` writes address of `buf + 2` at `buf`. |
+| `=`      | Pointer Jump          | Interprets the current cell as a pointer (raw `uintptr_t`) and sets `buf` to that address. Enables pointer-based control flow and tape indirection. |
+
+
+To test movement functionality compile `ptrs.b` in `tests` with --x --allow-canary.
+
+```brainfuck
+Pointer jumping test
+
+->->->->->->->->->->->->->->->->->->->->-??
+<<<<<<<<<<<<<<<<<<<<
+&&&&
+>>>>>>>>>>>>>>>>>>>>??
+<<<<<<<<<<<<<<<<<<<<
+=
+??
+```
 
 ##  Syscall Mode Example: `getpid`
 
