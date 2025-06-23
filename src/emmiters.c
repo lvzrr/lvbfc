@@ -37,7 +37,7 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool xc)
 				if (w)
 					fprintf(f,
 						"buf += %lu;\n"
-						"if (buf >= arr + %lu) buf -= %lu;\n",
+						"buf = (buf >= arr + %lu) ? buf - %lu : buf;\n",
 						x.len, s, s);
 				else
 					fprintf(f, "buf += %lu;\n", x.len);
@@ -47,7 +47,7 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool xc)
 				if (w)
 					fprintf(f,
 						"buf -= %lu;\n"
-						"if (buf < arr) buf += %lu;\n",
+						"buf = (buf < arr) ? buf + %lu : buf;\n",
 						x.len, s);
 				else
 					fprintf(f, "buf -= %lu;\n", x.len);
