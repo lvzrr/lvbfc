@@ -1,6 +1,10 @@
-# lvbfc (lv's Brainfuck compiler)
+# lvbfc (lv's Brainfuck compiler & superset)
 
-Brainfuck to C transpiler + compiler written in C, using the [llv](https://github.com/lvzrr/llv) library.
+Brainfuck to C transpiler + native binary compiler written in C, built using the [llv](https://github.com/lvzrr/llv) library.
+
+Supports standard Brainfuck, as well as a rich extended superset that includes features like shellcode execution, raw pointer manipulation, and memory intrinsics transpiled to fast, optimized C code.
+
+For more details on extensions, usage, implementation, and examples, see [INFO.md](./INFO.md).
 
 ## Features
 
@@ -19,6 +23,7 @@ Brainfuck to C transpiler + compiler written in C, using the [llv](https://githu
 | Extended Pointer Ops      | `&`, `=` allow storing/following raw pointers on tape |
 | Debug Stream Dump         | `--dmp-tok` prints token list pre-emit |
 | Minimal Dependencies      | Pure C, builds with `make` and standard compiler |
+| Backward compatible       | Superset functionallity is 100% optional, default idiomatic Brainfuck is fully supported |
 
 ## Build
 
@@ -70,5 +75,3 @@ Suggestions:
   - Shellcode mode:      --x with `;;;;;;` to exec 6‑byte syscall
   - Safe default:        no flags
 ```
-
-For more information, refer to [INFO.md](./INFO.md).
