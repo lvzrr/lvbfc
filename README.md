@@ -166,37 +166,15 @@ NOTE: run with allow canary to see the
 
 First fill the bytes of the shellcode
 
->+++++++++[<++++++++++++++++++++>-]<++++   184
->
-
-??
->++++[<++++++++++>-]<-                     39
->
->
->
->
-
-??
-
->+++[<+++++>-]<                            15
->
-
-??
-
-+++++                                      5
->
-
-??
-
->++++++++++++++++++++[<++++++++++>-]<----- 195
+>+++++++++[<++++++++++++++++++++>-]<++++
+>>++++[<++++++++++>-]<->>>>>+++[<+++++>-]
++++++>>++++++++++++++++++++[<++++++++++>-]<-----
 
 ??
 
 <<<<<<<    go back to the
            first byte of
            the syscall
-
-??
 
 ;;;;;;;;   run a 8 byte syscall
 
@@ -206,14 +184,6 @@ This will literally evaluate to this:
 
 ```shell
 $ ./bfout
-[CANARY] Dumping 2 bytes:
-B8 00 
-[CANARY] Dumping 6 bytes:
-B8 27 00 00 00 00 
-[CANARY] Dumping 7 bytes:
-B8 27 00 00 00 0F 00 
-[CANARY] Dumping 8 bytes:
-B8 27 00 00 00 0F 05 00 
 [CANARY] Dumping 8 bytes:
 B8 27 00 00 00 0F 05 C3 
 ```
@@ -278,7 +248,7 @@ return 0;
 * Because the syscall has no output, you'll only see effects with strace or a debugger.
 
 >[!NOTE]
-> `getpid.b` can be found in `tests/`, even though is a more compact version
+> `getpid.b` can be found in `tests/`
 
 ## TODO
 
