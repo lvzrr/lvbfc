@@ -103,7 +103,11 @@ The `canary` feature, enabled by the `--allow-canary` option, introduces special
 ```text
 $ cat helloworld.b
 
-++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++??.
+++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>
+---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++??.
+
+NOTE: this program doesn't end at the end of the
+string, the debug stops at the current pos. of the ptr
 
 $ lvbfc helloworld.b --no-wrap --no-strict
 
@@ -130,6 +134,7 @@ $ ./bfout
 [CANARY] Dumping 7 bytes:
 00 00 48 64 57 21 0A
 Hello World!
+
 ```
 
 ##  Syscall Mode Example: `getpid`
