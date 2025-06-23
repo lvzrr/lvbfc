@@ -167,6 +167,24 @@ Pointer jumping test
 ??
 ```
 
+Expected output:
+
+```text
+$ lvbfc --no-wrap  --no-strict ptrs.b --x --allow-canary
+
+[lvbfc] compiling
+[lvbfc] compililed successfully!
+
+$ ./bfout
+[CANARY] Dumping 21 bytes:
+FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
+[CANARY] Dumping 21 bytes:
+03 30 EA 4F FF 7F 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF
+[CANARY] Dumping 4 bytes:
+03 30 EA 4F
+
+```
+
 ##  Syscall Mode Example: `getpid`
 
 This example shows how to use the `--x` shellcode injection mode to perform a simple syscall. We inject raw x86-64 shellcode into executable memory and jump into it.
