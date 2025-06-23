@@ -129,6 +129,9 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool x)
 					);
 				}
 				break;
+			case '&':
+				fprintf(f, "uintptr_t __ptr =(uintptr_t)buf; __builtin_memcpy(buf, &__ptr, sizeof(uintptr_t));");
+			break;
 			case '?':
 				if (x.len == 1) {
 					fprintf(f, "/*\n\n CANARY \n\n */\n");
@@ -229,7 +232,6 @@ void	emit_heap(t_vec *v, size_t op, bool x)
 			case '-':
 				fprintf(f, "*buf -= %lu;\n", x.len);
 				break;
-
 			case '.':
 				for (size_t j = 0; j < x.len; j++)
 					fprintf(f, "fputc(*buf, stdout);\n");
@@ -308,6 +310,9 @@ void	emit_heap(t_vec *v, size_t op, bool x)
 						x.len, x.len
 					);
 				}
+			break;
+			case '&':
+				fprintf(f, "uintptr_t __ptr =(uintptr_t)buf; __builtin_memcpy(buf, &__ptr, sizeof(uintptr_t));");
 			break;
 			case '?':
 				if (x.len == 1) {

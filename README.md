@@ -138,6 +138,21 @@ Hello World!
 
 ```
 
+## Custom Operators (Shellcode Mode: `--x`)
+
+When compiling with `--x`, `lvbfc` enables a set of **non-standard extended operators** designed to support raw memory inspection, pointer manipulation, and direct shellcode injection.
+
+These operators are **only active when `--x` is enabled**. They will be ignored or rejected in standard modes.
+
+### Available Custom Operators
+
+| Operator | Name                  | Description |
+|----------|-----------------------|-------------|
+| `;`      | Syscall Exec Marker   | Copies `N` bytes from the tape (starting at the current pointer) to an executable buffer and runs it. Useful for raw syscall shellcode. |
+| `?`      | Canary Marker         | Inserts a debug marker in the emitted code. No runtime behavior, just a visual marker. |
+| `??`     | Buffer Dump           | Prints a hexadecimal dump of the tape from the start up to the current pointer. Used for live memory inspection during debugging. |
+| `&`      | Pointer Writer        | Writes the current `buf` pointer (as a raw address) into the tape at the current position. Effectively serializes the pointer as `sizeof(uintptr_t)` bytes. |
+
 ##  Syscall Mode Example: `getpid`
 
 This example shows how to use the `--x` shellcode injection mode to perform a simple syscall. We inject raw x86-64 shellcode into executable memory and jump into it.

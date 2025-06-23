@@ -21,7 +21,7 @@ char	*read_file(const char *name, bool x, bool can)
 	size_t i = 0;
 	while ((c = fgetc(f)) != EOF)
 	{
-		if (x && c == ';')
+		if (x && (c == ';' || c == '&'))
 			src[i++] = c;
 		if (can && c == '?')
 			src[i++] = c;
