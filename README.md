@@ -3,7 +3,6 @@
 Brainfuck to C transpiler + compiler written in C, using the [llv](https://github.com/lvzrr/llv) library.
 
 ## Features
-## Features
 
 | Feature                   | Description |
 |---------------------------|-------------|
