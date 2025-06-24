@@ -321,8 +321,61 @@ lvbfc (--no-strict --no-wrap --opt-level=0)   | 0.590 s   | 4.24B          | 2.6
 lvbfc (--no-strict --heap --opt-level=1)      | 1.021 s   | 11.61B         | 4.57B         | 2.54 | 1.98 %
 lvbfc (--no-strict, default)                | 1.340 s   | 9.26B          | 5.36B         | 1.73 | 3.10 %
 [bfjitc -O3 (C)](https://github.com/tsoding/bfjit)     | 1.586 s   | 5.54B          | 3.59B         | 1.54 | 4.00 %
-[btc (LLVM)](https://github.com/Wilfred/bfc)                                            | 0.730 s   | 5.97B          | 3.27B         | 1.83 | 4.15 %
+[bfc (LLVM)](https://github.com/Wilfred/bfc)                                            | 0.730 s   | 5.97B          | 3.27B         | 1.83 | 4.15 %
 Python (brainfuck.py)                          | 1830.571 s| 25.19T         | 5.95T         | 4.24 | 0.08 %
+
+## Reliability
+
+Unlike like other compilers, like [bfc](https://github.com/Wilfred/bfc), the tape is auto-wrapping by default, so segfaults are rare/impossible to do when using non-extended Brainfuck, for a notable performance lose, but this feature can be switched off with `--no-wrap`, which cuts the runtime by x2 or more, while still offering extendibility with `--stacksize=N`, so programs can be unsafe and performant with a false sense of security. For programs that need wrapping, it's highly encouraged to use `--heap` instead of the default if memory size isn't an issue.
+
+An example of this is clear when we try to calculate the transcendental number `e` in `e.b` with [bfc](https://github.com/Wilfred/bfc):
+
+```
+$ valgrind ./e >> /dev/null
+==13379== Memcheck, a memory error detector
+==13379== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==13379== Using Valgrind-3.25.0 and LibVEX; rerun with -h for copyright info
+==13379== Command: ./e
+==13379==
+==13379== Invalid read of size 1
+==13379==    at 0x400499E: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==  Address 0x4aab6e3 is 3 bytes after a block of size 100,000 alloc'd
+==13379==    at 0x484E7A8: malloc (vg_replace_malloc.c:446)
+==13379==    by 0x40011B3: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==
+==13379== Invalid read of size 1
+==13379==    at 0x40049C3: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==  Address 0x4aab6e3 is 3 bytes after a block of size 100,000 alloc'd
+==13379==    at 0x484E7A8: malloc (vg_replace_malloc.c:446)
+==13379==    by 0x40011B3: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==
+==13379== Invalid read of size 1
+==13379==    at 0x40049A8: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==  Address 0x4aab6e3 is 3 bytes after a block of size 100,000 alloc'd
+==13379==    at 0x484E7A8: malloc (vg_replace_malloc.c:446)
+==13379==    by 0x40011B3: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==
+==13379== Invalid write of size 1
+==13379==    at 0x40049C0: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==  Address 0x4aab6e3 is 3 bytes after a block of size 100,000 alloc'd
+==13379==    at 0x484E7A8: malloc (vg_replace_malloc.c:446)
+==13379==    by 0x40011B3: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==
+==13379== Invalid read of size 1
+==13379==    at 0x40049CF: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==  Address 0x4aab6e3 is 3 bytes after a block of size 100,000 alloc'd
+==13379==    at 0x484E7A8: malloc (vg_replace_malloc.c:446)
+==13379==    by 0x40011B3: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==
+==13379== Invalid read of size 1
+==13379==    at 0x4004A58: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==  Address 0x4aab6e3 is 3 bytes after a block of size 100,000 alloc'd
+==13379==    at 0x484E7A8: malloc (vg_replace_malloc.c:446)
+==13379==    by 0x40011B3: main (in /home/lvx/tooling/bfc/tests/e)
+```
+
+
+While if we run it with lvbfc it'll be slower (with `--heap` it will be actually faster because it doesn't actually wrap that much), but won't crash, and won't end.
 
 ## TODO
 
