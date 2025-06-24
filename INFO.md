@@ -224,6 +224,24 @@ return 0;
 ```
 
 
+And we can see it working if we use `strace`:
+
+```
+$ lvbfc getpid.b --no-strict --x
+
+WARNING: potential dangerous loop (no '-' in loop) detected @ seq. 0
+Compacted 155 operations into 44
+[lvbfc] compiling
+[lvbfc] compiled successfully!
+
+$ strace ./bfout 2>&1 | tail -n 4
+
+getpid()                                = 19706
+munmap(0x750f72618000, 512)             = 0
+exit_group(0)                           = ?
++++ exited with 0 +++
+```
+
 ### Notes
 
 * This shellcode will call `getpid()` and then return safely.
