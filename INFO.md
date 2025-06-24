@@ -338,40 +338,40 @@ $ valgrind ./e >> /dev/null
 ==13379== Command: ./e
 ==13379==
 ==13379== Invalid read of size 1
-==13379==    at 0x400499E: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==    at 0x400499E: main (in /home/usr/tooling/bfc/tests/e)
 ==13379==  Address 0x4aab6e3 is 3 bytes after a block of size 100,000 alloc'd
 ==13379==    at 0x484E7A8: malloc (vg_replace_malloc.c:446)
-==13379==    by 0x40011B3: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==    by 0x40011B3: main (in /home/usr/tooling/bfc/tests/e)
 ==13379==
 ==13379== Invalid read of size 1
-==13379==    at 0x40049C3: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==    at 0x40049C3: main (in /home/usr/tooling/bfc/tests/e)
 ==13379==  Address 0x4aab6e3 is 3 bytes after a block of size 100,000 alloc'd
 ==13379==    at 0x484E7A8: malloc (vg_replace_malloc.c:446)
-==13379==    by 0x40011B3: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==    by 0x40011B3: main (in /home/usr/tooling/bfc/tests/e)
 ==13379==
 ==13379== Invalid read of size 1
-==13379==    at 0x40049A8: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==    at 0x40049A8: main (in /home/usr/tooling/bfc/tests/e)
 ==13379==  Address 0x4aab6e3 is 3 bytes after a block of size 100,000 alloc'd
 ==13379==    at 0x484E7A8: malloc (vg_replace_malloc.c:446)
-==13379==    by 0x40011B3: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==    by 0x40011B3: main (in /home/usr/tooling/bfc/tests/e)
 ==13379==
 ==13379== Invalid write of size 1
-==13379==    at 0x40049C0: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==    at 0x40049C0: main (in /home/usr/tooling/bfc/tests/e)
 ==13379==  Address 0x4aab6e3 is 3 bytes after a block of size 100,000 alloc'd
 ==13379==    at 0x484E7A8: malloc (vg_replace_malloc.c:446)
-==13379==    by 0x40011B3: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==    by 0x40011B3: main (in /home/usr/tooling/bfc/tests/e)
 ==13379==
 ==13379== Invalid read of size 1
-==13379==    at 0x40049CF: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==    at 0x40049CF: main (in /home/usr/tooling/bfc/tests/e)
 ==13379==  Address 0x4aab6e3 is 3 bytes after a block of size 100,000 alloc'd
 ==13379==    at 0x484E7A8: malloc (vg_replace_malloc.c:446)
-==13379==    by 0x40011B3: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==    by 0x40011B3: main (in /home/usr/tooling/bfc/tests/e)
 ==13379==
 ==13379== Invalid read of size 1
-==13379==    at 0x4004A58: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==    at 0x4004A58: main (in /home/usr/tooling/bfc/tests/e)
 ==13379==  Address 0x4aab6e3 is 3 bytes after a block of size 100,000 alloc'd
 ==13379==    at 0x484E7A8: malloc (vg_replace_malloc.c:446)
-==13379==    by 0x40011B3: main (in /home/lvx/tooling/bfc/tests/e)
+==13379==    by 0x40011B3: main (in /home/usr/tooling/bfc/tests/e)
 ```
 
 
