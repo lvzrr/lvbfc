@@ -325,6 +325,11 @@ lvbfc (--no-strict, default)                | 1.340 s   | 9.26B          | 5.36B
 [bfc (LLVM)](https://github.com/Wilfred/bfc)                                            | 0.730 s   | 5.97B          | 3.27B         | 1.83 | 4.15 %
 Python (brainfuck.py)                          | 1830.571 s| 25.19T         | 5.95T         | 4.24 | 0.08 %
 
+>[!NOTE]
+>--no-wrap is the equivalent to bfc
+>--heap is the equivalent to bfjitc
+
+
 ## Reliability
 
 Unlike like other compilers, like [bfc](https://github.com/Wilfred/bfc) (self-claimed industrial grade), the tape is auto-wrapping by default, so segfaults are rare/impossible to do when using non-extended Brainfuck, for a notable performance lose, but this feature can be switched off with `--no-wrap`, which cuts the runtime by x2 or more, while still offering extendibility with `--stacksize=N`, so programs can be unsafe and performant with a false sense of security. For programs that need wrapping, it's highly encouraged to use `--heap` instead of the default if memory size isn't an issue.
