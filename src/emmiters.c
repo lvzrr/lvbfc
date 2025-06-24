@@ -247,8 +247,8 @@ void	emit_heap(t_vec *v, size_t ssize , size_t op, bool xc)
 		"uint8_t *buf = aligned_alloc(512, %lu);\n"
 		"if (!buf) { perror(\"unable to allocate space\"); return EXIT_FAILURE; }"
 		"size_t size = %lu;\n"
-		"__builtin_memset(buf, 0, 65536);\n"
-		"uint8_t *safeg = buf;\n", ssize, ssize);
+		"__builtin_memset(buf, 0, %lu);\n"
+		"uint8_t *safeg = buf;\n", ssize, ssize, ssize);
 	if (xc)
 		fprintf(f,"void *execbuf = mmap(NULL, 512, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);\n");
 	size_t i = 0;

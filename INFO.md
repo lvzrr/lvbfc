@@ -356,7 +356,7 @@ Unlike like other self-claimed industrial grade tooling, the tape in `lvbfc` is 
 
 This feature can be switched off with `--no-wrap`, which cuts the runtime cost by x2 or more, while still offering extendibility with `--stacksize=N`, so programs can be unsafe and performant with a manual guardrail.
 
-For programs that need wrapping, it's highly encouraged to use `--heap` instead of the default if memory size isn't an issue.
+For programs that may need more tape, it's highly encouraged to use `--heap` instead of the default if memory size isn't an issue. Because if the program does not consider wrapping, it'll stall, but that's on the program's design.
 
 An example of this is clear when we try to calculate the transcendental number `e` in `e.b` with [bfc](https://github.com/Wilfred/bfc):
 
@@ -405,7 +405,23 @@ $ valgrind ./e >> /dev/null
 ```
 
 
-While if we run it with lvbfc it'll be slower (with `--heap` it will be actually faster because it doesn't actually wrap that much), but won't crash, and won't end.
+While if we run programs that require more memory than we have available with `lvbfc` (running it with `--heap` bc the program doesn't account for wrapping):
+
+```
+$ lvbfc quine.b --stacksize=10 --no-strict --heap
+
+WARNING: potential dangerous loop (no '-' in loop) detected @ seq. 426
+WARNING: potential dangerous loop (no '-' in loop) detected @ seq. 437
+WARNING: potential dangerous loop (no '-' in loop) detected @ seq. 453
+WARNING: potential dangerous loop (no '-' in loop) detected @ seq. 469
+Compacted 883 operations into 483
+[lvbfc] compiling
+[lvbfc] compiled successfully!
+
+$ ./bfout
+>+++++>+++>+++>+++++>+++>+++>+++++>++++++>+>++>+++>++++>++++>+++>+++>+++++>+>+>++++>+++++++>+>+++++>+>+>+++++>++++++>+++>+++>++>+>+>++++>++++++>++++>++++>+++>+++++>+++>+++>++++>++>+>+>+>+>++>++>++>+>+>++>+>+>++++++>++++++>+>+>++++++>++++++>+>+>+>+++++>++++++>+>+++++>+++>+++>++++>++>+>+>++>+>+>++>++>+>+>++>++>+>+>+>+>++>+>+>+>++++>++>++>+>+++++>++++++>+++>+++>+++>+++>+++>+++>++>+>+>+>+>++>+>+>++++>+++>+++>+++>+++++>+>+++++>++++++>+>+>+>++>+++>+++>+++++++>+++>++++>+>++>+>+++++++>++++++>+>+++++>++++++>+++>+++>++>++>++>++>++>++>+>++>++>++>++>++>++>++>++>++>+>++++>++>++>++>++>++>++>++>+++++>++++++>++++>+++>+++++>++++++>++++>+++>+++>++++>+>+>+>+>+++++>+++>+++++>++++++>+++>+++>+++>++>+>+>+>++++>++++[[>>>+<<<-]<]>>>>[<<[-]<[-]+++++++[>+++++++++>++++++<<-]>-.>+>[<.<<+>>>-]>]<<<[>>+>>>>+<<<<<<-]>++[>>>+>>>>++>>++>>+>>+[<<]>-]>>>-->>-->>+>>+++>>>>+[<<]<[[-[>>+<<-]>>]>.[>>]<<[[<+>-]<<]<<]%
+
+```
 
 ## TODO
 
