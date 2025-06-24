@@ -42,36 +42,35 @@ Usage:
   ./lvbfc <input.b> [output] [options]
 
 Arguments:
-  <input.b>         Brainfuck source file (required)
-  [output]          Output binary name (optional)
-                    Default: bfout
+  <input.b>             Brainfuck source file (required)
+  [output]              Output binary name (optional)
+                        Default: bfout
 
 Options:
-  --no-strict       Disable safety checks for loops @ comptime
-  --no-wrap         Disable buffer wraparound (executes faster)
-  --heap            Use heap allocation for dynamic memory growth
-  --x               Enable syscall shellcode emit mode (experimental)
-                    Use `;` x N to mark syscall byte count
-  --allow-canary    Enable `?` and `??` instructions (buffer inspection)
-  --allow-intrinsics Enable special `$` operations (memset, math, etc.)
-  --stacksize=N     Initial memory size in bytes (default: 65536)
-  --opt-level=N     Optimization passes (default: 0), currently trivial
-  --dmp-tok         Print parsed token stream (debugging only)
-  --help            Show this help message and exit
+  --no-strict           Disable compile-time loop validation
+  --no-wrap             Disable tape wraparound (exits on overflow)
+  --heap                Use dynamic memory instead of fixed-size tape
+  --turbo               Skip all bounds checks (manual pointer safety)
+  --x                   Enable syscall emit mode using ';' bytes
+  --allow-canary        Enable '?' and '??' debug markers + memory dump
+  --allow-intrinsics    Enable '$' for memset, math, and other builtins
+  --stacksize=N         Initial tape size (default: 65536 bytes)
+  --opt-level=N         Optimizer passes (0 = off, >0 = enabled)
+  --dmp-tok             Dump token stream before compilation (debug)
+  --help                Show this help message and exit
 
 Output:
-  Produces a .c + native binary via GCC/Clang (fallback if needed).
-  Output binary defaults to './bfout' unless specified.
+  Produces .c and native binary using GCC or Clang (fallback supported)
 
 Examples:
-  ./lvbfc hello.b hello         # compile to ./hello
-  ./lvbfc code.b --heap         # safer & dynamic memory growth
-  ./lvbfc syscall.b --x         # run syscall via shellcode
-  ./lvbfc file.b --stacksize=0  # invalid → error
+  ./lvbfc hello.b hello           # compile to ./hello
+  ./lvbfc code.b --heap           # dynamic memory mode
+  ./lvbfc syscall.b --x           # emit + exec syscall shellcode
+  ./lvbfc file.b --stacksize=0    # compile error: invalid size
 
 Suggestions:
-  - Fastest:             --no-wrap --opt-level=1
+  - Fastest:             --no-wrap --opt-level=1 --turbo
   - Mid‑range:           --heap
-  - Shellcode mode:      --x with `;;;;;;` to exec 6‑byte syscall
+  - Shellcode mode:      --x with ';;;;;;' to emit 6‑byte syscall
   - Safe default:        no flags
 ```

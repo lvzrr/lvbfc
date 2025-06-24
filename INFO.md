@@ -333,20 +333,22 @@ Compliant with https://brainfuck.org/tests.b (included under tests/compliance) a
 
 ## Benchmarks (`mandelbrot.b`)
 
-Compiler                                       | Elapsed   | Instructions   | Cycles        | IPC  | Branch Misses
-----------------------------------------------|-----------|----------------|---------------|------|----------------
-lvbfc (--no-strict --no-wrap --opt-level=1)   | 0.589 s   | 4.23B          | 2.64B         | 1.60 | 4.25 %
-lvbfc (--no-strict --no-wrap --opt-level=0)   | 0.590 s   | 4.24B          | 2.64B         | 1.64 | 4.30 %
-lvbfc (--no-strict --heap --opt-level=1)      | 1.021 s   | 11.61B         | 4.57B         | 2.54 | 1.98 %
-lvbfc (--no-strict, default)                | 1.340 s   | 9.26B          | 5.36B         | 1.73 | 3.10 %
-[bfjitc -O3 (C)](https://github.com/tsoding/bfjit)     | 1.586 s   | 5.54B          | 3.59B         | 1.54 | 4.00 %
-[bfc (LLVM)](https://github.com/Wilfred/bfc)                                            | 0.730 s   | 5.97B          | 3.27B         | 1.83 | 4.15 %
-Python (brainfuck.py)                          | 1830.571 s| 25.19T         | 5.95T         | 4.24 | 0.08 %
+
+| Compiler                                       | Elapsed   | Instructions   | Cycles        | IPC  | Branch Misses |
+|-----------------------------------------------|-----------|----------------|---------------|------|----------------|
+| lvbfc (--no-strict --no-wrap --turbo)         | 0.618 s   | 4.18B          | 2.63B         | 1.59 | 4.32 %         |
+| bfc (LLVM)                                     | 0.730 s   | 5.97B          | 3.27B         | 1.83 | 4.15 %         |
+| lvbfc (--no-strict --no-wrap)                 | 0.988 s   | 7.36B          | 3.52B         | 2.09 | 1.68 %         |
+| lvbfc (--no-strict --heap --opt-level=1)      | 1.021 s   | 11.61B         | 4.57B         | 2.54 | 1.98 %         |
+| lvbfc (--no-strict, default)                  | 1.347 s   | 9.39B          | 5.49B         | 1.71 | 3.20 %         |
+| bfjitc -O3 (C)                                 | 1.586 s   | 5.54B          | 3.59B         | 1.54 | 4.00 %         |
+| Python (brainfuck.py)                         | 1830.571 s| 25.19T         | 5.95T         | 4.24 | 0.08 %         |
+
 
 >[!NOTE]
 > The behaviour of lvbfc:
 >
-> --no-wrap is the equivalent to bfc
+> --no-wrap --turbo is the equivalent to bfc
 >
 > --heap is the equivalent to bfjitc
 
@@ -354,7 +356,7 @@ Python (brainfuck.py)                          | 1830.571 s| 25.19T         | 5.
 
 Unlike like other self-claimed industrial grade tooling, the tape in `lvbfc` is auto-wrapping by default, so segfaults are rare/impossible to do when using non-extended Brainfuck, even if it means the programs are slower.
 
-This feature can be switched off with `--no-wrap`, which cuts the runtime cost by x2 or more, while still offering extendibility with `--stacksize=N`, so programs can be unsafe and performant with a manual guardrail.
+This feature can be switched off with `--no-wrap` (gracefully exists (no leaks on overflow)) and optionally `--turbo` (will break hard), which cuts the runtime cost by x2 or more, while still offering extendibility with `--stacksize=N`, so programs can be unsafe and performant with a manual guardrail.
 
 For programs that may need more tape, it's highly encouraged to use `--heap` instead of the default if memory size isn't an issue. Because if the program does not consider wrapping, it'll stall, but that's on the program's design.
 

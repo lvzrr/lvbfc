@@ -1,6 +1,6 @@
 #include "lvbfc.h"
 
-void emit(t_vec *v, bool w, size_t s, size_t l, bool xc)
+void emit(t_vec *v, bool w, size_t s, size_t l, bool xc, bool turbo)
 {
 #ifdef __WIN32
 	FILE *f = fopen("C:"SEP"tmp"SEP"bf.c", "w");
@@ -23,7 +23,9 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool xc)
 		"#include <stdlib.h>\n\n"
 		"int main(void) {"
 		"__attribute__((aligned(256))) uint8_t arr[%lu] = {0};"
-		"uint8_t *buf = &(arr[0]);\n", s);
+		"uint8_t *buf = &(arr[0]);\n",s);
+	if (!turbo)
+		fprintf(f, "size_t size = %lu;\n", s);
 	if (xc)
 		fprintf(f,"void *execbuf = mmap(NULL, 512, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);\n");
 	size_t i = 0;
@@ -34,23 +36,41 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool xc)
 		switch (x.op)
 		{
 			case '>':
-				if (w)
+				if (turbo)
+					fprintf(f,
+						"buf += %lu;\n",
+						x.len);
+				else if (w && !turbo)
 					fprintf(f,
 						"buf += %lu;\n"
-						"buf = (buf >= arr + %lu) ? buf - %lu : buf;\n",
-						x.len, s, s);
+						"if (buf >= arr + size) buf -= size;\n",
+						x.len);
 				else
-					fprintf(f, "buf += %lu;\n", x.len);
+					if (xc)
+						fprintf(f, "if (buf > arr + size) {fprintf(stderr,\"Out of bounds access\"); munmap(execbuf, 512); exit(EXIT_FAILURE);}\n"
+			  			"buf += %lu;\n", x.len);
+					else
+						fprintf(f, "if (buf > arr + size) {fprintf(stderr,\"Out of bounds access\"); exit(EXIT_FAILURE);}\n"
+			  			"buf += %lu;\n", x.len);
 				break;
 
 			case '<':
-				if (w)
+				if (turbo)
+					fprintf(f,
+						"buf -= %lu;\n",
+						x.len);
+				else if (w && !turbo)
 					fprintf(f,
 						"buf -= %lu;\n"
-						"buf = (buf < arr) ? buf + %lu : buf;\n",
-						x.len, s);
+						"if (buf < arr) buf += size;\n",
+						x.len);
 				else
-					fprintf(f, "buf -= %lu;\n", x.len);
+					if (xc)
+						fprintf(f, "buf -= %lu;\n"
+			  			"if (buf < arr) {fprintf(stderr,\"Out of bounds access\"); munmap(execbuf, 512); exit(EXIT_FAILURE);}\n", x.len);
+					else
+						fprintf(f, "buf -= %lu;\n"
+			  			"if (buf < arr) {fprintf(stderr,\"Out of bounds access\"); exit(EXIT_FAILURE);}\n", x.len);
 				break;
 			case '+':
 				fprintf(f, "*buf += %lu;\n", x.len);
@@ -100,7 +120,7 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool xc)
 			case ';':
 				if (x.len % 32 == 0) {
 					fprintf(f,
-						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
+						"if (execbuf == MAP_FAILED) { fprintf(stderr,\"mmap failed\"); exit(EXIT_FAILURE); }\n"
 						"{\n"
 						"    size_t chunks = %lu / 32;\n"
 						"    for (size_t i = 0; i < chunks; ++i) {\n"
@@ -114,7 +134,7 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool xc)
 					);
 				} else if (x.len % 16 == 0) {
 					fprintf(f,
-						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
+						"if (execbuf == MAP_FAILED) { fprintf(stderr,\"mmap failed\"); exit(EXIT_FAILURE); }\n"
 						"{\n"
 						"    size_t chunks = %lu / 16;\n"
 						"    for (size_t i = 0; i < chunks; ++i) {\n"
@@ -128,7 +148,7 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool xc)
 					);
 				} else {
 					fprintf(f,
-						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
+						"if (execbuf == MAP_FAILED) { fprintf(stderr,\"mmap failed\"); exit(EXIT_FAILURE); }\n"
 						"__builtin_memcpy(execbuf, buf, %lu);\n"
 						"((void(*)(void))execbuf)();\n"
 						"__builtin_memset(execbuf, 0, %lu);\n",
@@ -140,7 +160,7 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool xc)
 				fprintf(f, "if ((buf - &(arr[0])) + sizeof(uintptr_t) > size) {\n");
 				if (xc)
 					fprintf(f,"munmap(execbuf, 512);\n");
-				fprintf(f,"perror(\"Overflow ptr write\");exit(EXIT_FAILURE);\n");
+				fprintf(f,"fprintf(stderr,\"Overflow ptr write\");exit(EXIT_FAILURE);\n");
 				fprintf(f,"}\n");
 				fprintf(f, "uintptr_t __ptr =(uintptr_t)buf + %lu; __builtin_memcpy(buf, &__ptr, sizeof(uintptr_t));\n", x.len - 1);
 			break;
@@ -176,17 +196,17 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool xc)
 						break;
 					case 2:
 						fprintf(f,
-							"if ((buf - arr) + *buf > %lu) { perror(\"memset overflow\"); exit(EXIT_FAILURE); }\n"
+							"if ((buf - arr) + *buf > %lu) { fprintf(stderr,\"memset overflow\"); exit(EXIT_FAILURE); }\n"
 							"__builtin_memset(buf, 0, *buf);\n", s);
 						break;
 					case 3:
 						fprintf(f,
-							"if ((buf - arr) + *(buf + 1) > %lu) { perror(\"memset overflow\"); exit(EXIT_FAILURE); }\n"
+							"if ((buf - arr) + *(buf + 1) > %lu) { fprintf(stderr,\"memset overflow\"); exit(EXIT_FAILURE); }\n"
 							"__builtin_memset(buf, *buf, *(buf + 1));\n", s);
 						break;
 					case 5:
 						fprintf(f,
-							"if ((buf - arr) + 1 >= %lu) { perror(\"out-of-bounds multiplication\"); exit(EXIT_FAILURE); }\n"
+							"if ((buf - arr) + 1 >= %lu) { fprintf(stderr,\"out-of-bounds multiplication\"); exit(EXIT_FAILURE); }\n"
 							"*buf *= *(buf + 1);\n", s);
 						break;
 					default:
@@ -236,7 +256,7 @@ void	emit_heap(t_vec *v, size_t ssize , size_t op, bool xc)
 		"    if (offset + (n) >= size) { \\\n"
 		"        size_t new_size = (offset + (n)) * 2; \\\n"
 		"        uint8_t *new_buf = realloc(safeg, new_size); \\\n"
-		"        if (!new_buf) { perror(\"realloc failed\"); exit(EXIT_FAILURE); } \\\n"
+		"        if (!new_buf) { fprintf(stderr,\"realloc failed\"); exit(EXIT_FAILURE); } \\\n"
 		"        safeg = new_buf; \\\n"
 		"        buf = safeg + offset; \\\n"
 		"        __builtin_memset(safeg + size, 0, new_size - size); \\\n"
@@ -245,7 +265,7 @@ void	emit_heap(t_vec *v, size_t ssize , size_t op, bool xc)
 		"} while (0)\n\n"
 		"int main(void) {"
 		"uint8_t *buf = aligned_alloc(512, %lu);\n"
-		"if (!buf) { perror(\"unable to allocate space\"); return EXIT_FAILURE; }"
+		"if (!buf) { fprintf(stderr,\"unable to allocate space\"); return EXIT_FAILURE; }"
 		"size_t size = %lu;\n"
 		"__builtin_memset(buf, 0, %lu);\n"
 		"uint8_t *safeg = buf;\n", ssize, ssize, ssize);
@@ -318,7 +338,7 @@ void	emit_heap(t_vec *v, size_t ssize , size_t op, bool xc)
 			case ';':
 				if (x.len % 32 == 0) {
 					fprintf(f,
-						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
+						"if (execbuf == MAP_FAILED) { fprintf(stderr,\"mmap failed\"); exit(EXIT_FAILURE); }\n"
 						"{\n"
 						"    size_t chunks = %lu / 32;\n"
 						"    for (size_t i = 0; i < chunks; ++i) {\n"
@@ -332,7 +352,7 @@ void	emit_heap(t_vec *v, size_t ssize , size_t op, bool xc)
 					);
 				} else if (x.len % 16 == 0) {
 					fprintf(f,
-						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
+						"if (execbuf == MAP_FAILED) { fprintf(stderr,\"mmap failed\"); exit(EXIT_FAILURE); }\n"
 						"{\n"
 						"    size_t chunks = %lu / 16;\n"
 						"    for (size_t i = 0; i < chunks; ++i) {\n"
@@ -346,7 +366,7 @@ void	emit_heap(t_vec *v, size_t ssize , size_t op, bool xc)
 					);
 				} else {
 					fprintf(f,
-						"if (execbuf == MAP_FAILED) { perror(\"mmap failed\"); exit(EXIT_FAILURE); }\n"
+						"if (execbuf == MAP_FAILED) { fprintf(stderr,\"mmap failed\"); exit(EXIT_FAILURE); }\n"
 						"__builtin_memcpy(execbuf, buf, %lu);\n"
 						"((void(*)(void))execbuf)();\n"
 						"__builtin_memset(execbuf, 0, %lu);\n",
@@ -359,7 +379,7 @@ void	emit_heap(t_vec *v, size_t ssize , size_t op, bool xc)
 				if (xc)
 					fprintf(f,"munmap(execbuf, 512);\n");
 				fprintf(f,"free(safeg);\n");
-				fprintf(f,"perror(\"Overflow ptr write\");exit(EXIT_FAILURE);\n");
+				fprintf(f,"fprintf(stderr,\"Overflow ptr write\");exit(EXIT_FAILURE);\n");
 				fprintf(f,"}\n");
 				fprintf(f, "uintptr_t __ptr =(uintptr_t)buf + %lu; __builtin_memcpy(buf, &__ptr, sizeof(uintptr_t));\n", x.len - 1);
 			break;
@@ -395,17 +415,17 @@ void	emit_heap(t_vec *v, size_t ssize , size_t op, bool xc)
 						break;
 					case 2:
 						fprintf(f,
-							"if ((buf - safeg) + *buf > size) { perror(\"memset overflow\"); exit(EXIT_FAILURE); }\n"
+							"if ((buf - safeg) + *buf > size) { fprintf(stderr,\"memset overflow\"); exit(EXIT_FAILURE); }\n"
 							"__builtin_memset(buf, 0, *buf);\n");
 						break;
 					case 3:
 						fprintf(f,
-							"if ((buf - safeg) + *(buf + 1) > size) { perror(\"memset overflow\"); exit(EXIT_FAILURE); }\n"
+							"if ((buf - safeg) + *(buf + 1) > size) { fprintf(stderr,\"memset overflow\"); exit(EXIT_FAILURE); }\n"
 							"__builtin_memset(buf, *buf, *(buf + 1));\n");
 						break;
 					case 5:
 						fprintf(f,
-							"if ((buf - safeg) + 1 >= size) { perror(\"out-of-bounds multiplication\"); exit(EXIT_FAILURE); }\n"
+							"if ((buf - safeg) + 1 >= size) { fprintf(stderr,\"out-of-bound multiplication\"); exit(EXIT_FAILURE); }\n"
 							"*buf *= *(buf + 1);\n");
 						break;
 					default:

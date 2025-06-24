@@ -1,6 +1,6 @@
 #include "lvbfc.h"
 
-static inline	void phelp(void)
+static inline void	phelp(void)
 {
 	printf(
 		"lvbfc - Brainfuck compiler\n"
@@ -9,37 +9,36 @@ static inline	void phelp(void)
 		"  ./lvbfc <input.b> [output] [options]\n"
 		"\n"
 		"Arguments:\n"
-		"  <input.b>         Brainfuck source file (required)\n"
-		"  [output]          Output binary name (optional)\n"
-		"                    Default: bfout\n"
+		"  <input.b>             Brainfuck source file (required)\n"
+		"  [output]              Output binary name (optional)\n"
+		"                        Default: bfout\n"
 		"\n"
 		"Options:\n"
-		"  --no-strict       Disable safety checks for loops @ comptime\n"
-		"  --no-wrap         Disable buffer wraparound (executes faster)\n"
-		"  --heap            Use heap allocation for dynamic memory growth\n"
-		"  --x               Enable syscall shellcode emit mode (experimental)\n"
-		"                    Use `;` x N to mark syscall byte count\n"
-		"  --allow-canary    Enable `?` and `??` instructions (buffer inspection)\n"
-		"  --allow-intrinsics Enable special `$` operations (memset, math, etc.)\n"
-		"  --stacksize=N     Initial memory size in bytes (default: 65536)\n"
-		"  --opt-level=N     Optimization passes (default: 0), currently trivial\n"
-		"  --dmp-tok         Print parsed token stream (debugging only)\n"
-		"  --help            Show this help message and exit\n"
+		"  --no-strict           Disable compile-time loop validation\n"
+		"  --no-wrap             Disable tape wraparound (exits on overflow)\n"
+		"  --heap                Use dynamic memory instead of fixed-size tape\n"
+		"  --turbo               Skip all bounds checks (manual pointer safety)\n"
+		"  --x                   Enable syscall emit mode using ';' bytes\n"
+		"  --allow-canary        Enable '?' and '??' debug markers + memory dump\n"
+		"  --allow-intrinsics    Enable '$' for memset, math, and other builtins\n"
+		"  --stacksize=N         Initial tape size (default: 65536 bytes)\n"
+		"  --opt-level=N         Optimizer passes (0 = off, >0 = enabled)\n"
+		"  --dmp-tok             Dump token stream before compilation (debug)\n"
+		"  --help                Show this help message and exit\n"
 		"\n"
 		"Output:\n"
-		"  Produces a .c + native binary via GCC/Clang (fallback if needed).\n"
-		"  Output binary defaults to './bfout' unless specified.\n"
+		"  Produces .c and native binary using GCC or Clang (fallback supported)\n"
 		"\n"
 		"Examples:\n"
-		"  ./lvbfc hello.b hello         # compile to ./hello\n"
-		"  ./lvbfc code.b --heap         # safer & dynamic memory growth\n"
-		"  ./lvbfc syscall.b --x         # run syscall via shellcode\n"
-		"  ./lvbfc file.b --stacksize=0  # invalid → error\n"
+		"  ./lvbfc hello.b hello           # compile to ./hello\n"
+		"  ./lvbfc code.b --heap           # dynamic memory mode\n"
+		"  ./lvbfc syscall.b --x           # emit + exec syscall shellcode\n"
+		"  ./lvbfc file.b --stacksize=0    # compile error: invalid size\n"
 		"\n"
 		"Suggestions:\n"
-		"  - Fastest:             --no-wrap --opt-level=1\n"
+		"  - Fastest:             --no-wrap --opt-level=1 --turbo\n"
 		"  - Mid‑range:           --heap\n"
-		"  - Shellcode mode:      --x with `;;;;;;` to exec 6‑byte syscall\n"
+		"  - Shellcode mode:      --x with ';;;;;;' to emit 6‑byte syscall\n"
 		"  - Safe default:        no flags\n"
 	);
 }
@@ -79,6 +78,7 @@ int main(int argc, char **argv)
 	bool	x = false;
 	bool	can = false;
 	bool	intr = false;
+	bool	turbo = false;
 
 	if (argc < 2)
 	{
@@ -99,6 +99,8 @@ int main(int argc, char **argv)
 			intr = true;
 	  	else if (strcmp(argv[i], "--heap") == 0) 
 			heap = true;
+	  	else if (strcmp(argv[i], "--turbo") == 0) 
+			turbo = true;
 	  	else if (strcmp(argv[i], "--x") == 0) 
 			x = true;
 		else if (strncmp(argv[i], "--stacksize=", 12) == 0)
@@ -156,7 +158,7 @@ int main(int argc, char **argv)
 	if (heap)
 		emit_heap(&o, stsize, optl, x);
 	else
-		emit(&o, wrap, stsize, optl, x);
+		emit(&o, wrap, stsize, optl, x, turbo);
 	compile_c(outname);
 	printf("[lvbfc] compiled successfully!\n");
 	return (0);
