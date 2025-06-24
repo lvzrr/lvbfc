@@ -327,7 +327,9 @@ Python (brainfuck.py)                          | 1830.571 s| 25.19T         | 5.
 
 >[!NOTE]
 > The behaviour of lvbfc:
+>
 > --no-wrap is the equivalent to bfc
+>
 > --heap is the equivalent to bfjitc
 
 ## Reliability
