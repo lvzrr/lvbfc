@@ -327,7 +327,7 @@ Python (brainfuck.py)                          | 1830.571 s| 25.19T         | 5.
 
 ## Reliability
 
-Unlike like other compilers, like [bfc](https://github.com/Wilfred/bfc), the tape is auto-wrapping by default, so segfaults are rare/impossible to do when using non-extended Brainfuck, for a notable performance lose, but this feature can be switched off with `--no-wrap`, which cuts the runtime by x2 or more, while still offering extendibility with `--stacksize=N`, so programs can be unsafe and performant with a false sense of security. For programs that need wrapping, it's highly encouraged to use `--heap` instead of the default if memory size isn't an issue.
+Unlike like other compilers, like [bfc](https://github.com/Wilfred/bfc) (self-claimed industrial grade), the tape is auto-wrapping by default, so segfaults are rare/impossible to do when using non-extended Brainfuck, for a notable performance lose, but this feature can be switched off with `--no-wrap`, which cuts the runtime by x2 or more, while still offering extendibility with `--stacksize=N`, so programs can be unsafe and performant with a false sense of security. For programs that need wrapping, it's highly encouraged to use `--heap` instead of the default if memory size isn't an issue.
 
 An example of this is clear when we try to calculate the transcendental number `e` in `e.b` with [bfc](https://github.com/Wilfred/bfc):
 
