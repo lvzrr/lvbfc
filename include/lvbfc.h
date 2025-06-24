@@ -7,6 +7,8 @@
 #include "llv/vec.h"
 #include "llv/mem.h"
 #include "llv/conv.h"
+#include "llv/printf.h"
+#include "llv/cstr.h"
 
 #define THROW_ERR(msg, vec, ...) \
 	do { \

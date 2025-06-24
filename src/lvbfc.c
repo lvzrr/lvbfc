@@ -2,7 +2,7 @@
 
 static inline void	phelp(void)
 {
-	printf(
+	lv_printf(
 		"lvbfc - Brainfuck compiler\n"
 		"---------------------------------------------------\n"
 		"Usage:\n"
@@ -18,9 +18,9 @@ static inline void	phelp(void)
 		"  --no-wrap             Disable tape wraparound (exits on overflow)\n"
 		"  --heap                Use dynamic memory instead of fixed-size tape\n"
 		"  --turbo               Skip all bounds checks (manual pointer safety)\n"
-		"  --x                   Enable syscall emit mode using ';' bytes\n"
-		"  --allow-canary        Enable '?' and '??' debug markers + memory dump\n"
-		"  --allow-intrinsics    Enable '$' for memset, math, and other builtins\n"
+		"  --x                   Enable syscall emit mode using \';\' bytes\n"
+		"  --allow-canary        Enable \'\?\' and \'\?\?\' debug markers + memory dump\n"
+		"  --allow-intrinsics    Enable \'$\' for memset, math, and other builtins\n"
 		"  --stacksize=N         Initial tape size (default: 65536 bytes)\n"
 		"  --opt-level=N         Optimizer passes (0 = off, >0 = enabled)\n"
 		"  --dmp-tok             Dump token stream before compilation (debug)\n"
@@ -38,7 +38,7 @@ static inline void	phelp(void)
 		"Suggestions:\n"
 		"  - Fastest:             --no-wrap --opt-level=1 --turbo\n"
 		"  - Mid‑range:           --heap\n"
-		"  - Shellcode mode:      --x with ';;;;;;' to emit 6‑byte syscall\n"
+		"  - Shellcode mode:      --x with \';;;;;;\' to emit 6‑byte syscall\n"
 		"  - Safe default:        no flags\n"
 	);
 }
@@ -87,28 +87,28 @@ int main(int argc, char **argv)
 	}
 	for (int i = 1; i < argc; i++)
 	{
-		if (strcmp(argv[i], "--no-strict") == 0) 
+		if (lv_strcmp(argv[i], "--no-strict") == 0) 
 			strict = false;
-		else if (strcmp(argv[i], "--dmp-tok") == 0) 
+		else if (lv_strcmp(argv[i], "--dmp-tok") == 0) 
 			shstrm = true;
-	  	else if (strcmp(argv[i], "--no-wrap") == 0) 
+	  	else if (lv_strcmp(argv[i], "--no-wrap") == 0) 
 			wrap = false;
-	  	else if (strcmp(argv[i], "--allow-canary") == 0) 
+	  	else if (lv_strcmp(argv[i], "--allow-canary") == 0) 
 			can = true;
-	  	else if (strcmp(argv[i], "--allow-intrinsics") == 0) 
+	  	else if (lv_strcmp(argv[i], "--allow-intrinsics") == 0) 
 			intr = true;
-	  	else if (strcmp(argv[i], "--heap") == 0) 
+	  	else if (lv_strcmp(argv[i], "--heap") == 0) 
 			heap = true;
-	  	else if (strcmp(argv[i], "--turbo") == 0) 
+	  	else if (lv_strcmp(argv[i], "--turbo") == 0) 
 			turbo = true;
-	  	else if (strcmp(argv[i], "--x") == 0) 
+	  	else if (lv_strcmp(argv[i], "--x") == 0) 
 			x = true;
-		else if (strncmp(argv[i], "--stacksize=", 12) == 0)
+		else if (lv_strncmp(argv[i], "--stacksize=", 12) == 0)
 		{
 			stsize = lv_atoul(*(argv + i) + 12);
 			if (!stsize)
 			{
-				fprintf(stderr, "Invalid stacksize\n");
+				write(2, "Invalid stacksize\n", 19);
 				return (EXIT_FAILURE);
 			}
 		}
@@ -117,7 +117,7 @@ int main(int argc, char **argv)
 			optl = lv_atoul(*(argv + i) + 12);
 			optl = (optl > 0) ? 1 : 0;
 		}
-		else if (strcmp(argv[i], "--help") == 0) 
+		else if (lv_strcmp(argv[i], "--help") == 0) 
 		{
 			phelp();
 			return (0);
@@ -145,21 +145,21 @@ int main(int argc, char **argv)
 	if (shstrm)
 	{
 		optimize(&o, optl);
-		printf("==OPT==\n");
+		lv_printf("==OPT==\n");
 		for (size_t i = 0; i < o.size; i++) {
 			const t_tokenseq *t = lv_vec_get(&o, i);
 			if (t)
-				printf("op: %c, len: %zu\n", t->op, t->len);
+				lv_printf("op: %c, len: %zu\n", t->op, t->len);
 		}
 		lv_vec_free(&o);
 		return (0);
 	}
-	printf("[lvbfc] compiling\n");
+	write(2, "[lvbfc] compiling\n", 19);
 	if (heap)
 		emit_heap(&o, stsize, optl, x);
 	else
 		emit(&o, wrap, stsize, optl, x, turbo);
 	compile_c(outname);
-	printf("[lvbfc] compiled successfully!\n");
+	write(2, "[lvbfc] compiled successfully!\n", 32);
 	return (0);
 }
