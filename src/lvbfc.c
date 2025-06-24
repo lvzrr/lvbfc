@@ -149,7 +149,7 @@ int main(int argc, char **argv)
 		for (size_t i = 0; i < o.size; i++) {
 			const t_tokenseq *t = lv_vec_get(&o, i);
 			if (t)
-				lv_printf("op: %c, len: %zu\n", t->op, t->len);
+				printf("op: %c, len: %zu\n", t->op, t->len);
 		}
 		lv_vec_free(&o);
 		return (0);
