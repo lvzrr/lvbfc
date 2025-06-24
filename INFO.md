@@ -10,6 +10,7 @@
 - [Requirements](#requirements)
 - [Tests](#tests)
 - [Benchmarks (`mandelbrot.b`)](#benchmarks-mandelbrotb)
+- [Reliability](#reliability)
 - [TODO](#todo)
 
 ## Custom Operators (Shellcode Mode: `--x`)
