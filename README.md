@@ -4,7 +4,8 @@ Brainfuck to C transpiler + native binary compiler written in C, built using the
 
 Supports standard Brainfuck, as well as a rich extended superset that includes features like shellcode execution, raw pointer manipulation, and memory intrinsics transpiled to fast, optimized C code.
 
-For more details on extensions, usage, implementation, and examples, see [INFO.md](./INFO.md).
+>[!NOTE]
+>**For more details on extensions, usage, implementation, and examples, see [INFO.md](./INFO.md).**
 
 ## Features
 
