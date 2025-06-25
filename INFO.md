@@ -35,11 +35,6 @@ These patterns replace verbose loop mechanics with semantically equivalent, low-
 
 This reduces redundant zeroing followed by simple mutation.
 
-### Loop Dead Code Removal
-
-* Loops that follow a `Z` or `]` without side effects are erased.
-* Leading loops at program start are dropped entirely if unexecuted.
-
 ### Vector Compaction
 
 Redundant or dead ops are removed across passes, reducing emitted C code dramatically.
@@ -56,9 +51,6 @@ This program would estimate a stack size of 6, hinting at how far the pointer mi
 
 >[!WARNING]
 >This is a static estimate, not a runtime guarantee.
-
->[!NOTE]
->These transformations preserve Brainfuck semantics but are sensitive to complex control flow or self-modifying tape tricks. Use `--opt-level=0` for maximal fidelity.
 
 ## Custom Operators (Shellcode Mode: `--x`)
 
@@ -475,6 +467,3 @@ $ ./bfout
 ## TODO
 
 - [ ] Multi-file compilation support
-
->[!WARNING]
-> --opt-level=1 can mess with really complex programs like utm.b or bitwidth.b, use --opt-level=0 for these, it still does heavy opts, but not as aggressively, every other program works just fine. (It'll fail with the cc/clang command, so you'll know, i'm working on it, but i'm not a magician)

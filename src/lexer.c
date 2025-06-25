@@ -172,7 +172,7 @@ t_vec	lex(const char *src, bool strict, bool dmp, size_t *stsize)
 		}
 
 		if (dmp)
-			printf("op: %c  len: %lu plevel: %ld\n", x2->op, x2->len, plevel);
+			fprintf(stderr, "op: %c, len: %lu\n", x2->op, x2->len);
 	}
 	if (plevel != 0)
 	{
