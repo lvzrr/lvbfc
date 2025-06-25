@@ -48,13 +48,13 @@ void compile_c(char *name)
 	char cmd[256] = {0};
 	bool ok = false;
 	snprintf(cmd, sizeof(cmd),
-		"cc -Wall -Wextra -Werror -O3 -march=native -msse -msse2 -mavx -mavx2 "SEP"tmp"SEP"bf.c -o %s", name);
+		"cc -O3 -march=native -msse -msse2 -mavx -mavx2 "SEP"tmp"SEP"bf.c -o %s", name);
 	if (system(cmd) == 0)
 		ok = true;
 	else
 	{
 		snprintf(cmd, sizeof(cmd),
-			"clang -Wall -Wextra -Werror -O3 -march=native -msse -msse2 -mavx -mavx2 "SEP"tmp"SEP"bf.c -o %s", name);
+			"clang -O3 -march=native -msse -msse2 -mavx -mavx2 "SEP"tmp"SEP"bf.c -o %s", name);
 		if (system(cmd) == 0)
 			ok = true;
 	}
@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 	char *src = read_file(filename, x, can, intr);
 	if (!src)
 		return EXIT_FAILURE;
-	t_vec o = lex(src, strict, shstrm);
+	t_vec o = lex(src, strict, shstrm, &stsize);
 	if (shstrm)
 	{
 		optimize(&o, optl);

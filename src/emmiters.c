@@ -113,9 +113,8 @@ void emit(t_vec *v, bool w, size_t s, size_t l, bool xc, bool turbo)
 				break;
 			case 'C':
 				fprintf(f,
-					"{ uint8_t tmp = buf[0]; buf[0] = 0;\n"
-					"for (size_t j = 0; j < %lu; j++) buf[j + 1] += tmp; }",
-					x.len);
+					"__builtin_memset(buf, *buf, %lu + 1); *buf = 0;"
+					,x.len);
 				break;
 			case ';':
 				if (x.len % 32 == 0) {

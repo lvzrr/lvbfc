@@ -40,8 +40,9 @@ char	*read_file(const char *name, bool x, bool can, bool intr)
 	return (src);
 }
 
-t_vec	lex(const char *src, bool strict, bool dmp)
+t_vec	lex(const char *src, bool strict, bool dmp, size_t *stsize)
 {
+	size_t		st = 0;
 	char		curr = 0;
 	char		*start = 0;
 	t_tokenseq	x = {0};
@@ -104,6 +105,8 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 			}
 		}
 		totalopts += x.len;
+		if (x.op == '>')
+			st += x.len;
 		lv_vec_push(&out, &x, 1);
 	}
 	ssize_t plevel = 0;
@@ -179,5 +182,7 @@ t_vec	lex(const char *src, bool strict, bool dmp)
     fprintf(stderr,
         COLOR_GREEN "Compacted %lu operations into %lu\n" COLOR_RESET,
         totalopts, out.size);
+	if (st > *stsize)
+		*stsize = st;
 	return (free((char *)ogp), out);
 }

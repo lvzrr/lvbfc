@@ -40,6 +40,6 @@ typedef	struct tokenseq
 void	emit(t_vec *v, bool w, size_t stsize, size_t l, bool x, bool turbo);
 void	emit_heap(t_vec *v, size_t stsize, size_t l, bool x);
 void	optimize(t_vec *v, size_t l);
-t_vec	lex(const char *src, bool strict, bool dmp);
+t_vec	lex(const char *src, bool strict, bool dmp, size_t *ss);
 char	*read_file(const char *name, bool x, bool can, bool intr);
 #endif
