@@ -189,9 +189,9 @@ void	optimize(t_vec *v, size_t level)
 			if (x->op == 0 || x->len == 0) continue;
 			switch (x->op)
 			{
-				case '[': opt_openl(v, i); break;
-				case 'Z': optz(v, i); break;
-				default:  break;
+				case '[':	opt_openl(v, i); break;
+				case 'Z':	optz(v, i); break;
+				default:	break;
 			}
 			compact_vector(v);
 		}
