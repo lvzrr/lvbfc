@@ -330,9 +330,8 @@ void	emit_heap(t_vec *v, size_t ssize , size_t op, bool xc)
 
 			case 'C':
 				fprintf(f,
-					"{ uint8_t tmp = buf[0]; buf[0] = 0;\n"
-					"for (size_t j = 0; j < %lu; j++) buf[j + 1] += tmp; }",
-					x.len);
+					"__builtin_memset(buf, *buf, %lu + 1); *buf = 0;"
+					,x.len);
 				break;
 			case ';':
 				if (x.len % 32 == 0) {

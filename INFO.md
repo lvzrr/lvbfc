@@ -1,5 +1,6 @@
 ## Table of Contents
 
+- [Optimizations](#optimizations)
 - [Custom Operators (Shellcode Mode: `--x`)](#custom-operators-shellcode-mode---x)
 - [The 'Canary' Feature](#the-canary-feature)
 - [The 'Pointer' Feature](#the-pointer-feature)
@@ -12,6 +13,52 @@
 - [Benchmarks (`mandelbrot.b`)](#benchmarks-mandelbrotb)
 - [Reliability](#reliability)
 - [TODO](#todo)
+
+## Optimizations
+
+`lvbfc` applies aggressive and context-aware optimizations to Brainfuck code.
+
+These transformations improve performance, reduce loop overhead, and compact redundant operations. Below are some of the notable patterns:
+
+### Loop Elision and Collapsing
+
+* `[-]` is replaced with `Z` (zero current cell), removing all loop structure overhead.
+* `[->+<]` becomes `M` (move current cell to next).
+* `[->+>+<<]`-style loops become `C` (copy current cell to N right neighbors).
+
+These patterns replace verbose loop mechanics with semantically equivalent, low-cost operations.
+
+### Z-based Folding
+
+* `Z +` becomes `A` (assign value).
+* `Z -` becomes `S` (assign negative value, cast from unsigned).
+
+This reduces redundant zeroing followed by simple mutation.
+
+### Loop Dead Code Removal
+
+* Loops that follow a `Z` or `]` without side effects are erased.
+* Leading loops at program start are dropped entirely if unexecuted.
+
+### Vector Compaction
+
+Redundant or dead ops are removed across passes, reducing emitted C code dramatically.
+
+### Static Analysis: Pointer Growth Estimation
+
+During lexing, lvbfc tracks the maximum pointer offset caused by > operations. This is used to pre-size the tape (if --stacksize is less than the estimate) more accurately and avoid unnecessary reallocation or bounds checks later.
+
+```brainfuck
+>>>>>+++[->+<]
+```
+
+This program would estimate a stack size of 6, hinting at how far the pointer might roam.
+
+>[!WARNING]
+>This is a static estimate, not a runtime guarantee.
+
+>[!NOTE]
+>These transformations preserve Brainfuck semantics but are sensitive to complex control flow or self-modifying tape tricks. Use `--opt-level=0` for maximal fidelity.
 
 ## Custom Operators (Shellcode Mode: `--x`)
 
