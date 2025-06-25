@@ -193,7 +193,7 @@ void	optimize(t_vec *v, size_t level)
 				case 'Z': optz(v, i); break;
 				default:  break;
 			}
+			compact_vector(v);
 		}
-		compact_vector(v);
 	}
 }

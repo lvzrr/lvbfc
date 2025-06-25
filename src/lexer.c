@@ -102,25 +102,6 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 				}
 				continue ;
 			}
-			if (x.op == '[' && *(src) == '-' && *(src + 1) == ']')
-			{
-				x.len--;
-				if (!x.len)
-				{
-					x.op = 'Z';
-					x.len = 1;
-					lv_vec_push(&out, &x, 1);
-					src += 2;
-					continue;
-				}
-				else
-				{
-					lv_vec_push(&out, &x, 1);
-					x.op = 'Z';
-					x.len = 1;
-					src += 2;
-				}
-			}
 		}
 		totalopts += x.len;
 		lv_vec_push(&out, &x, 1);
