@@ -147,7 +147,7 @@ t_vec	lex(const char *src, bool strict, bool dmp)
 				if (y->op == '-')
 				{
 					hasm = true;
-					break;
+					break ;
 				}
 				i2++;
 			}
