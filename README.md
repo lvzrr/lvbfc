@@ -32,9 +32,6 @@ Supports standard Brainfuck, as well as a rich extended superset that includes f
 make
 ```
 
->[!NOTE]
->running `make` will autofetch llv as it has its own repo
-
 ## Usage
 ```
 lvbfc - Brainfuck compiler
